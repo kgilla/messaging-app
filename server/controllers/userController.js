@@ -32,7 +32,7 @@ exports.create = [
     .isLength({ min: 8, max: 60 })
     .withMessage("Passwords must be at least 8 characters long.")
     .trim(),
-  (req, res, next) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -41,17 +41,16 @@ exports.create = [
     }
     try {
       const { username, password, email } = req.body;
-      bcrypt.hash(password, 10, async (err, hashedPassword) => {
-        const user = new User({
-          username: username,
-          email,
-          password: hashedPassword,
-        });
-        const response = await user.save();
-        res.status(201).json({
-          user: response,
-          message: "Saved successfully",
-        });
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = new User({
+        username: username,
+        email,
+        password: hashedPassword,
+      });
+      const response = await user.save();
+      res.status(201).json({
+        user: response,
+        message: "Saved successfully",
       });
     } catch (err) {
       return next(err);
@@ -62,7 +61,7 @@ exports.create = [
 exports.login = [
   body("username").trim().trim(),
   body("password").trim(),
-  (req, res, next) => {
+  (req, res) => {
     passport.authenticate(
       "local",
       { session: false },

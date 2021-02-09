@@ -22,10 +22,10 @@ mongoose.connect(mongoDB, {
   useUnifiedTopology: true,
   useFindAndModify: false,
 });
-var db = mongoose.connection;
+const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
-var app = express();
+const app = express();
 
 app.use(passport.initialize());
 app.use(logger("dev"));
