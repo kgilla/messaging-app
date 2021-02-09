@@ -1,7 +1,5 @@
-# Express Starter
+# Messaging App
 
-This starter repo will be used for building applications using React, Material-UI, React-Router, Node, & Express.js.
+## Database Information
 
-## Getting started
-
-The project is broken down into a client and server folder.
+To connect to the database locally the DB_URI env variable is: "mongodb+srv://admin:kenneth123@cluster0.ts4jw.mongodb.net/messaging-app?retryWrites=true&w=majority". Please don't steal my extremely secure password
