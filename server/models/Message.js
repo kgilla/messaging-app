@@ -9,4 +9,4 @@ const messageSchema = new Schema({
   dateEdited: { type: Date },
 });
 
-module.exports = mongoose.model("User", messageSchema);
+module.exports = mongoose.model("Message", messageSchema);
