@@ -1,4 +1,5 @@
 const { body, validationResult } = require("express-validator");
+const User = require("../models/User");
 
 const userValidationRules = () => {
   return [
@@ -40,7 +41,7 @@ const validate = (req, res, next) => {
   const extractedErrors = [];
   errors.array().map((err) => extractedErrors.push({ [err.param]: err.msg }));
 
-  return res.status(422).json({
+  return res.status(400).json({
     errors: extractedErrors,
   });
 };
