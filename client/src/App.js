@@ -1,35 +1,15 @@
 import React from "react";
 import { CssBaseline, MuiThemeProvider } from "@material-ui/core";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { theme } from "./themes/theme";
-import FormLayout from "./components/FormLayout";
-import SignupForm from "./components/SignupForm";
-import LoginForm from "./components/LoginForm";
-
-import "./App.css";
+import { ProvideAuth } from "./hooks/useAuth";
+import Routes from "./Routes";
 
 function App() {
   return (
     <MuiThemeProvider theme={theme}>
-      <Router>
-        <Switch>
-          <Route path="/signup">
-            <FormLayout>
-              <SignupForm />
-            </FormLayout>
-          </Route>
-          <Route path="/login">
-            <FormLayout>
-              <LoginForm />
-            </FormLayout>
-          </Route>
-          <Route path="/">
-            <FormLayout>
-              <LoginForm />
-            </FormLayout>
-          </Route>
-        </Switch>
-      </Router>
+      <ProvideAuth>
+        <Routes />
+      </ProvideAuth>
       <CssBaseline />
     </MuiThemeProvider>
   );
