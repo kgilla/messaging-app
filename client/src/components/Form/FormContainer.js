@@ -5,7 +5,20 @@ import FormSide from "./FormSide";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
 
-const useStyles = makeStyles((theme) => ({}));
+const useStyles = makeStyles((theme) => ({
+  input: {
+    margin: "16px 0",
+  },
+
+  formButton: {
+    width: "100%",
+    maxWidth: "150px",
+    margin: "32px auto",
+    padding: "16px",
+    fontWeight: "700",
+    textTransform: "none",
+  },
+}));
 
 export default function FormLayout({ formType }) {
   const classes = useStyles();
@@ -19,7 +32,11 @@ export default function FormLayout({ formType }) {
       </Hidden>
       <Grid item xs={12} sm={8}>
         <FormHeader formType={formType} />
-        {formType === "login" ? <LoginForm /> : <SignupForm />}
+        {formType === "login" ? (
+          <LoginForm classes={classes} />
+        ) : (
+          <SignupForm classes={classes} />
+        )}
       </Grid>
     </Grid>
   );

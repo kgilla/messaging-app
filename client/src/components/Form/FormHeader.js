@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
   sideText: {
     color: "#aaa",
     fontSize: "16px",
+    fontWeight: "500",
   },
 
   formSwitch: {
@@ -26,10 +27,9 @@ const useStyles = makeStyles((theme) => ({
     padding: "16px 32px",
     fontSize: "16px",
     background: "#fff",
-    border: "none",
-    outline: "none",
     textTransform: "none",
     color: theme.palette.primary.main,
+    fontWeight: "600",
   },
 }));
 
@@ -49,7 +49,7 @@ export default function FormLayoutHeader({ formType }) {
         to={formType === "login" ? "/signup" : "/login"}
         className={classes.formSwitch}
       >
-        <span>{formType === "login" ? "Create account?" : "Login"}</span>
+        <span>{formType === "login" ? "Create account" : "Login"}</span>
       </Button>
     </Grid>
   );

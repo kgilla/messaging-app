@@ -1,51 +1,39 @@
 import React from "react";
+import { useForm } from "react-hook-form";
+import { useAuth } from "../../hooks/useAuth";
+import { Button, TextField, Typography } from "@material-ui/core";
+
 import Form from "./Form";
-import { useForm } from "../../hooks/useForm";
-import { Grid, Button, TextField, makeStyles } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
 
-const initValues = {
-  username: "",
-  password: "",
-};
+export default function LoginForm({ classes }) {
+  const { register, handleSubmit, errors } = useForm();
 
-const useStyles = makeStyles((theme) => ({
-  input: {
-    margin: "16px 0",
-  },
+  const auth = useAuth();
 
-  formButton: {
-    width: "100%",
-    maxWidth: "150px",
-    margin: "32px auto",
-    padding: "16px",
-    fontWeight: "700",
-    textTransform: "none",
-  },
-}));
-
-export default function LoginForm() {
-  const { values, handleInputChange } = useForm(initValues);
-  const classes = useStyles();
+  const onSubmit = async (data) => {
+    console.log(data);
+    await auth.login(data);
+  };
 
   return (
-    <Form>
-      <h1>Welcome Back!</h1>
+    <Form handleSubmit={handleSubmit(onSubmit)}>
+      <Typography variant="h1">Welcome back!</Typography>
       <TextField
         name="username"
         type="text"
         label="Username"
+        inputRef={register}
         className={classes.input}
-        value={values.username}
       />
       <TextField
         name="password"
         type="password"
         label="Password"
+        inputRef={register}
         className={classes.input}
-        value={values.password}
       />
       <Button
+        type="submit"
         variant="contained"
         color="primary"
         className={classes.formButton}

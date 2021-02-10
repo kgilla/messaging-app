@@ -13,11 +13,49 @@ export const useAuth = () => {
 function useProvideAuth() {
   const [user, setUser] = useState({});
 
-  const login = () => {};
+  const login = async (values) => {
+    try {
+      const response = await fetch("http://localhost:3001/api/users/login", {
+        method: "post",
+        body: JSON.stringify(values),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+      } else {
+        const data = await response.json();
+        console.log(data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const logout = () => {};
 
-  const signup = () => {};
+  const signup = async (values) => {
+    try {
+      const { username, email, password } = values;
+      const response = await fetch("http://localhost:3001/api/users/create", {
+        method: "post",
+        body: JSON.stringify({ username, email, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+      } else {
+        console.log(response);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = (user) => {
@@ -33,6 +71,7 @@ function useProvideAuth() {
 
   return {
     user,
+    signup,
     login,
     logout,
   };

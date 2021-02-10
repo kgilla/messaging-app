@@ -4,10 +4,10 @@ import { makeStyles } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    maxWidth: "500px",
+    maxWidth: "450px",
     display: "flex",
     flexDirection: "column",
-    padding: "32px",
+    justifyContent: "center",
     margin: "0 auto",
   },
 }));
