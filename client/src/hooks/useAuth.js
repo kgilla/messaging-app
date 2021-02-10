@@ -13,13 +13,11 @@ export const useAuth = () => {
 function useProvideAuth() {
   const [user, setUser] = useState({});
 
-  const login = (newUser) => {
-    setUser(newUser);
-  };
+  const login = () => {};
 
-  const logout = () => {
-    setUser(null);
-  };
+  const logout = () => {};
+
+  const signup = () => {};
 
   useEffect(() => {
     const unsubscribe = (user) => {

@@ -10,8 +10,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function useForm(initialValues) {
-  const [values, setValues] = useState(initialValues);
+export function useForm(initValues) {
+  const [values, setValues] = useState(initValues);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
