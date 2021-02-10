@@ -8,9 +8,7 @@ const passport = require("passport");
 // imports passport config for local and jwt strategies
 require("./config/passport.js");
 
-const userRouter = require("./routes/user");
-const indexRouter = require("./routes/index");
-const pingRouter = require("./routes/ping");
+const routes = require("./routes");
 
 const { json, urlencoded } = express;
 
@@ -34,9 +32,7 @@ app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
 
-app.use("/", indexRouter);
-app.use("/ping", pingRouter);
-app.use("/users", userRouter);
+app.use("/api", routes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

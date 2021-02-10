@@ -32,7 +32,7 @@ exports.create = [
     .isLength({ min: 8, max: 60 })
     .withMessage("Passwords must be at least 8 characters long.")
     .trim(),
-  async (req, res) => {
+  async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
