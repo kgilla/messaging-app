@@ -21,11 +21,15 @@ exports.create = async (req, res, next) => {
 };
 
 exports.read = async (req, res, next) => {
-  const query = req.query.user;
-  const users = await User.find({
-    username: { $regex: query, $options: "i" },
-  });
-  return res.json({ users });
+  try {
+    const { query } = req.query.user;
+    const users = await User.find({
+      username: { $regex: query, $options: "i" },
+    });
+    return res.status(200).json({ users });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 exports.login = (req, res, next) => {

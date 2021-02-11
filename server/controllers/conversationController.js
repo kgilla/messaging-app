@@ -1,4 +1,3 @@
-const Message = require("../models/Message");
 const User = require("../models/User");
 const Conversation = require("../models/Conversation");
 

@@ -17,8 +17,3 @@ router.use(
 );
 
 module.exports = router;
-
-// a way to store conversations and messages
-// an API call to get all conversations for a user
-// an API call to get all messages for a conversation (ordered in a way that makes sense)
-// an API to search for users to find them to talk to
