@@ -3,9 +3,12 @@ const express = require("express");
 const { join } = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const passport = require("passport");
 
-const indexRouter = require("./routes/index");
-const pingRouter = require("./routes/ping");
+// imports passport config for local and jwt strategies
+require("./config/passport.js");
+
+const routes = require("./routes");
 
 const { json, urlencoded } = express;
 
@@ -22,14 +25,14 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 const app = express();
 
+app.use(passport.initialize());
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
 
-app.use("/", indexRouter);
-app.use("/ping", pingRouter);
+app.use("/api", routes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
