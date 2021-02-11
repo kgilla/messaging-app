@@ -20,6 +20,14 @@ exports.create = async (req, res, next) => {
   }
 };
 
+exports.read = async (req, res, next) => {
+  const query = req.query.user;
+  const users = await User.find({
+    username: { $regex: query, $options: "i" },
+  });
+  return res.json({ users });
+};
+
 exports.login = (req, res, next) => {
   try {
     const token = jwt.sign({ user: req.user }, process.env.JWT_SECRET);
