@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Grid,
-  Button,
-  Typography,
-  Hidden,
-  makeStyles,
-} from "@material-ui/core";
+import { Grid, Button, Typography, makeStyles } from "@material-ui/core";
 import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -30,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "none",
     color: theme.palette.primary.main,
     fontWeight: "600",
+    boxShadow: "0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)",
   },
 }));
 

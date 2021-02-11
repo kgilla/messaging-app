@@ -1,22 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
 import { Button, TextField, Typography } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
 
 import Form from "./Form";
 
 export default function LoginForm({ classes }) {
+  const [error, setError] = useState(null);
   const { register, handleSubmit, errors } = useForm();
 
   const auth = useAuth();
 
   const onSubmit = async (data) => {
-    console.log(data);
-    await auth.login(data);
+    const response = await auth.login(data);
+    if (response) {
+      setError(false);
+      // continue to next page
+      alert("logged in.");
+    } else {
+      setError(true);
+    }
   };
 
   return (
     <Form handleSubmit={handleSubmit(onSubmit)}>
+      {error ? (
+        <Alert severity="error" style={{ margin: "16px 0" }}>
+          Invalid credentials.
+        </Alert>
+      ) : null}
       <Typography variant="h1">Welcome back!</Typography>
       <TextField
         name="username"

@@ -24,17 +24,20 @@ function useProvideAuth() {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
+        setUser(data.user);
+        return true;
       } else {
         const data = await response.json();
-        console.log(data);
+        return false;
       }
     } catch (err) {
       console.log(err);
     }
   };
 
-  const logout = () => {};
+  const logout = () => {
+    setUser(null);
+  };
 
   const signup = async (values) => {
     try {
@@ -48,9 +51,11 @@ function useProvideAuth() {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
+        setUser(data.user);
+        return data;
       } else {
-        console.log(response);
+        const data = await response.json();
+        return data;
       }
     } catch (err) {
       console.log(err);

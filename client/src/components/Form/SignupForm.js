@@ -1,9 +1,10 @@
 import React from "react";
 import Form from "./Form";
-import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
+import { Button, TextField, Typography } from "@material-ui/core";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useAuth } from "../../hooks/useAuth";
 
 const schema = yup.object().shape({
   username: yup
@@ -31,8 +32,10 @@ export default function SignupForm({ classes }) {
     resolver: yupResolver(schema),
   });
 
+  const auth = useAuth();
+
   const onSubmit = (data) => {
-    console.log(data);
+    const response = auth.signup(data);
   };
 
   return (
@@ -76,7 +79,7 @@ export default function SignupForm({ classes }) {
         color="primary"
         className={classes.formButton}
       >
-        Sign Up
+        Create
       </Button>
     </Form>
   );

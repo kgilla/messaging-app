@@ -27,8 +27,8 @@ const userValidationRules = () => {
       .trim()
       .normalizeEmail(),
     body("password")
-      .isLength({ min: 8, max: 60 })
-      .withMessage("Passwords must be at least 8 characters long.")
+      .isLength({ min: 6 })
+      .withMessage("Passwords must be at least 6 characters long.")
       .trim(),
   ];
 };

@@ -7,13 +7,13 @@ import SignupForm from "./SignupForm";
 
 const useStyles = makeStyles((theme) => ({
   input: {
-    margin: "16px 0",
+    margin: "12px 0",
   },
 
   formButton: {
     width: "100%",
     maxWidth: "150px",
-    margin: "32px auto",
+    margin: "16px auto",
     padding: "16px",
     fontWeight: "700",
     textTransform: "none",
