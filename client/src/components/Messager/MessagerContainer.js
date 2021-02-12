@@ -1,18 +1,10 @@
-import React, { useState } from "react";
-import {
-  Grid,
-  Typography,
-  TextField,
-  Hidden,
-  Paper,
-  Drawer,
-  makeStyles,
-  Button,
-} from "@material-ui/core";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../../hooks/useAuth";
+import { baseUrl } from "../../config/const";
+import { Grid, Hidden, Drawer, makeStyles } from "@material-ui/core";
 
 import Sidebar from "./Sidebar";
 import MessengerMain from "./MessengerMain";
-import Conversation from "./Conversation";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -29,6 +21,28 @@ const useStyles = makeStyles((theme) => ({
 export default function MessagerContainer() {
   const [open, setOpen] = useState(false);
   const [currentConvo, setCurrentConvo] = useState(null);
+  const [allConvos, setAllConvos] = useState(null);
+
+  const auth = useAuth();
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/conversations`, {
+          method: "get",
+        });
+        if (response.ok) {
+          let data = response.json();
+          console.log(data);
+        } else {
+          console.log(response);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getData();
+  }, []);
 
   const classes = useStyles();
 
