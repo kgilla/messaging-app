@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
 import { Button, TextField, Typography } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
+import { useHistory } from "react-router-dom";
 
 import Form from "./Form";
 
@@ -11,13 +12,13 @@ export default function LoginForm({ classes }) {
   const { register, handleSubmit, errors } = useForm();
 
   const auth = useAuth();
+  const history = useHistory();
 
   const onSubmit = async (data) => {
     const response = await auth.login(data);
     if (response) {
       setError(false);
-      // continue to next page
-      alert("logged in.");
+      history.push("/messenger");
     } else {
       setError(true);
     }
