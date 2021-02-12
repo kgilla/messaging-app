@@ -43,3 +43,11 @@ exports.login = (req, res, next) => {
     return next(err);
   }
 };
+
+exports.logout = (req, res, next) => {
+  try {
+    return res.status(200).clearCookie("token");
+  } catch (err) {
+    return next(err);
+  }
+};

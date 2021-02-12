@@ -3,6 +3,7 @@ import { Route, Redirect } from "react-router-dom";
 
 const PrivateRoute = ({ children, ...rest }) => {
   let auth = useAuth();
+  console.log(auth.user);
   return (
     <Route
       {...rest}

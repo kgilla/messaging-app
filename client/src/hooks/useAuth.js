@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
+import { baseUrl } from "../config/const";
+
 const authContext = createContext();
 
 export function ProvideAuth({ children }) {
@@ -11,11 +13,11 @@ export const useAuth = () => {
 };
 
 function useProvideAuth() {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
 
   const login = async (values) => {
     try {
-      const response = await fetch("http://localhost:3001/api/users/login", {
+      const response = await fetch(`${baseUrl}/users/login`, {
         method: "post",
         body: JSON.stringify(values),
         headers: {
@@ -35,14 +37,24 @@ function useProvideAuth() {
     }
   };
 
-  const logout = () => {
-    setUser(null);
+  const logout = async () => {
+    try {
+      setUser(null);
+      const response = await fetch(`${baseUrl}/users/logout`, {
+        method: "post",
+      });
+      if (response.ok) {
+        // TODO issue some logout flash message
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const signup = async (values) => {
     try {
       const { username, email, password } = values;
-      const response = await fetch("http://localhost:3001/api/users/create", {
+      const response = await fetch(`${baseUrl}/users/create`, {
         method: "post",
         body: JSON.stringify({ username, email, password }),
         headers: {
