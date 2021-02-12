@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import Form from "./Form";
-import { Button, TextField, Typography } from "@material-ui/core";
+import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -20,58 +21,82 @@ const schema = yup.object().shape({
     .string()
     .required("An email is required")
     .email("Must be a valid email"),
-  password: yup.string().required("Password is required").min(6).max(40),
-  password2: yup
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, { message: "Password must be at least 6 characters long" }),
+  passwordConfirm: yup
     .string()
     .required("Please re-enter password")
     .oneOf([yup.ref("password"), null], "Passwords must match"),
 });
 
-export default function SignupForm({ classes }) {
+const useStyles = makeStyles((theme) => ({
+  input: theme.input,
+  formButton: theme.formButton,
+  error: theme.error,
+}));
+
+export default function SignupForm() {
+  const [formErrors, setFormErrors] = useState(null);
+
   const { register, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
   });
 
   const auth = useAuth();
+  const classes = useStyles();
 
-  const onSubmit = (data) => {
-    const response = auth.signup(data);
+  const onSubmit = async (data) => {
+    const response = await auth.signup(data);
+    if (response.errors) {
+      setFormErrors(response.errors);
+    }
+    console.log(response.errors);
   };
 
   return (
     <Form handleSubmit={handleSubmit(onSubmit)}>
       <Typography variant="h1">Create an account.</Typography>
+      {formErrors &&
+        formErrors.map((err, i) => (
+          <Alert key={i} severity="error">
+            {err}
+          </Alert>
+        ))}
       <TextField
         name="username"
         label="Username"
         className={classes.input}
         inputRef={register}
-        error={errors.username ? true : null}
-        helperText={errors.username ? errors.username.message : null}
+        error={!!errors.username}
+        helperText={errors.username?.message}
       />
       <TextField
         name="email"
         label="Email"
         className={classes.input}
         inputRef={register}
-        error={errors.email ? true : null}
-        helperText={errors.email ? errors.email.message : null}
+        error={!!errors.email}
+        helperText={errors.email?.message}
       />
       <TextField
         name="password"
         label="Password"
+        type="password"
         className={classes.input}
         inputRef={register}
-        error={errors.password ? true : null}
-        helperText={errors.password ? errors.password.message : null}
+        error={!!errors.password}
+        helperText={errors.password?.message}
       />
       <TextField
-        name="password2"
+        name="passwordConfirm"
         label="Confirm Password"
+        type="password"
         className={classes.input}
         inputRef={register}
-        error={errors.password2 ? true : null}
-        helperText={errors.password2 ? errors.password2.message : null}
+        error={!!errors.passwordConfirm}
+        helperText={errors.passwordConfirm?.message}
       />
       <Button
         type="submit"

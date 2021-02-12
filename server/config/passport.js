@@ -9,13 +9,13 @@ module.exports = passport.use(
     try {
       const user = await User.findOne({ username });
       if (!user) {
-        return done(null, false);
+        return done(null, false, { msg: "Invalid Credentials" });
       } else {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
-          return done(null, user);
+          return done(null, user, { msg: "Success" });
         } else {
-          return done(null, false);
+          return done(null, false, { msg: "Invalid Credentials" });
         }
       }
     } catch (err) {

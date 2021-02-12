@@ -15,21 +15,18 @@ function useProvideAuth() {
 
   const login = async (values) => {
     try {
-      const response = await fetch("http://localhost:3001/api/users/login", {
+      const response = await fetch("/api/users/login", {
         method: "post",
         body: JSON.stringify(values),
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (response.ok) {
-        const data = await response.json();
+      const data = await response.json();
+      if (data.user) {
         setUser(data.user);
-        return true;
-      } else {
-        const data = await response.json();
-        return false;
       }
+      return data;
     } catch (err) {
       console.log(err);
     }
@@ -42,7 +39,7 @@ function useProvideAuth() {
   const signup = async (values) => {
     try {
       const { username, email, password } = values;
-      const response = await fetch("http://localhost:3001/api/users/create", {
+      const response = await fetch("/api/users/create", {
         method: "post",
         body: JSON.stringify({ username, email, password }),
         headers: {
@@ -50,29 +47,18 @@ function useProvideAuth() {
         },
       });
       if (response.ok) {
-        const data = await response.json();
         setUser(data.user);
-        return data;
-      } else {
-        const data = await response.json();
-        return data;
       }
+      const data = await response.json();
+      return data;
     } catch (err) {
       console.log(err);
     }
   };
 
-  useEffect(() => {
-    const unsubscribe = (user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
-      }
-    };
-
-    return () => unsubscribe();
-  }, []);
+  // useEffect(() => {
+  //  // need to implement auto login if cookie present
+  // }, []);
 
   return {
     user,
