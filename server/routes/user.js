@@ -6,6 +6,7 @@ const {
 } = require("../validators/userValidators");
 const userController = require("../controllers/userController");
 const passport = require("passport");
+const { requireSignin } = require("../middleware/requireSignin");
 
 router.get(
   "/",
@@ -16,10 +17,6 @@ router.get(
 );
 
 router.post("/create", userValidationRules(), validate, userController.create);
-router.post(
-  "/login",
-  passport.authenticate("local", { session: false }),
-  userController.login
-);
+router.post("/login", requireSignin, userController.login);
 
 module.exports = router;

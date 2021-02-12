@@ -12,4 +12,20 @@ export const theme = createMuiTheme({
   palette: {
     primary: { main: "#3A8DFF" },
   },
+  input: {
+    margin: "12px 0",
+  },
+
+  formButton: {
+    width: "100%",
+    maxWidth: "150px",
+    margin: "16px auto",
+    padding: "16px",
+    fontWeight: "700",
+    textTransform: "none",
+  },
+
+  error: {
+    margin: "16px 0",
+  },
 });
