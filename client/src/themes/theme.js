@@ -5,6 +5,7 @@ export const theme = createMuiTheme({
     fontFamily: '"Open Sans", sans-serif',
     fontSize: 16,
     h1: {
+      marginBottom: "16px",
       fontSize: 28,
       fontWeight: 600,
     },
@@ -23,9 +24,5 @@ export const theme = createMuiTheme({
     padding: "16px",
     fontWeight: "700",
     textTransform: "none",
-  },
-
-  error: {
-    margin: "16px 0",
   },
 });

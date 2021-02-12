@@ -34,10 +34,11 @@ const schema = yup.object().shape({
 const useStyles = makeStyles((theme) => ({
   input: theme.input,
   formButton: theme.formButton,
+  error: theme.error,
 }));
 
 export default function SignupForm() {
-  const [error, setError] = useState(null);
+  const [formErrors, setFormErrors] = useState(null);
 
   const { register, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
@@ -46,18 +47,23 @@ export default function SignupForm() {
   const auth = useAuth();
   const classes = useStyles();
 
-  const onSubmit = (data) => {
-    const response = auth.signup(data);
+  const onSubmit = async (data) => {
+    const response = await auth.signup(data);
+    if (response.errors) {
+      setFormErrors(response.errors);
+    }
+    console.log(response.errors);
   };
 
   return (
     <Form handleSubmit={handleSubmit(onSubmit)}>
       <Typography variant="h1">Create an account.</Typography>
-      {error && (
-        <Alert severity="error" className={classes.error}>
-          {error.msg}
-        </Alert>
-      )}
+      {formErrors &&
+        formErrors.map((err, i) => (
+          <Alert key={i} severity="error">
+            {err}
+          </Alert>
+        ))}
       <TextField
         name="username"
         label="Username"
