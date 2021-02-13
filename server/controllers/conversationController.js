@@ -1,25 +1,21 @@
 const User = require("../models/User");
 const Conversation = require("../models/Conversation");
 
-// could refactor into an update call with upsert option to facilitate adding new users to existing conversations and or creating documents in one call.
-
 exports.create = async (req, res, next) => {
   try {
-    // check if conversation already exists to avoid duplication
     const oldConversation = await Conversation.find({
       users: { $all: [req.body.recipient, req.user._id] },
     });
-    if (oldConversation) {
+    if (oldConversation.length < 1) {
       return res.status(400).json({
         message: "Conversation alreay exists",
       });
-    } else {
-      const recipient = await User.findById(req.body.recipient);
-      const conversation = new Conversation({
-        users: [req.user._id, recipient],
-      });
-      await conversation.save();
     }
+    const recipient = await User.findById(req.body.recipient);
+    const conversation = new Conversation({
+      users: [req.user._id, recipient],
+    });
+    await conversation.save();
     return res.status(201).json({
       conversation,
     });
@@ -28,12 +24,52 @@ exports.create = async (req, res, next) => {
   }
 };
 
+// grabs all conversations from auth user, populates the users, and grabs the most recent message and populates the author
+
 exports.read = async (req, res, next) => {
   try {
-    const conversations = await Conversation.find({ users: req.user._id });
-    res.json({
-      conversations,
-    });
+    const data = await Conversation.aggregate([
+      { $match: { users: req.user._id } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "users",
+          foreignField: "_id",
+          as: "users",
+        },
+      },
+      {
+        $lookup: {
+          from: "messages",
+          let: { id: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$$id", "$conversation"] },
+              },
+            },
+            { $sort: { dateCreated: -1 } },
+            { $limit: 1 },
+            {
+              $lookup: {
+                from: "users",
+                let: { id: "$author" },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: { $eq: ["$$id", "$_id"] },
+                    },
+                  },
+                ],
+                as: "author",
+              },
+            },
+          ],
+          as: "messages",
+        },
+      },
+    ]);
+    return res.status(200).json(data);
   } catch (err) {
     return next(err);
   }

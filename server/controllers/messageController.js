@@ -16,12 +16,15 @@ exports.create = async (req, res, next) => {
   }
 };
 
-// Probably should put a limit on this and do some pagination if a user wants older messages
 exports.read = async (req, res, next) => {
   try {
+    const page = 30 * req.query.page;
     const messages = await Message.find({
       conversation: req.params.convoID,
-    }).sort({ dateCreated: -1 });
+    })
+      .sort({ dateCreated: -1 })
+      .skip(page)
+      .limit(30);
     res.status(200).json({
       messages,
     });

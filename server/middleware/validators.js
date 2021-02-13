@@ -33,6 +33,10 @@ const userValidationRules = () => {
   ];
 };
 
+const messageValidationRules = () => {
+  return [body("content").notEmpty().withMessage("A message is required")];
+};
+
 const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
@@ -48,5 +52,6 @@ const validate = (req, res, next) => {
 
 module.exports = {
   userValidationRules,
+  messageValidationRules,
   validate,
 };
