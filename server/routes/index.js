@@ -5,13 +5,13 @@ const passport = require("passport");
 router.use("/users", require("./user"));
 
 router.use(
-  "/conversations",
+  "/convos",
   passport.authenticate("jwt", { session: false }),
   require("./conversation")
 );
 
 router.use(
-  "/conversations/:convoID/messages",
+  "/convos/:convoID/messages",
   passport.authenticate("jwt", { session: false }),
   require("./message")
 );

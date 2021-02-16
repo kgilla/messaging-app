@@ -28,11 +28,11 @@ export default function MessagerContainer() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await fetch(`${baseUrl}/conversations`, {
+        const response = await fetch("/api/convos", {
           method: "get",
         });
         if (response.ok) {
-          let data = response.json();
+          let data = await response.json();
           console.log(data);
         } else {
           console.log(response);

@@ -22,7 +22,7 @@ exports.create = async (req, res, next) => {
 
 exports.read = async (req, res, next) => {
   try {
-    const { query } = req.query.user;
+    const query = req.query.user;
     const users = await User.find({
       username: { $regex: query, $options: "i" },
     });
@@ -47,6 +47,16 @@ exports.login = (req, res, next) => {
 exports.logout = (req, res, next) => {
   try {
     return res.status(200).clearCookie("token");
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.reAuth = async (req, res, next) => {
+  try {
+    console.log("here");
+    console.log(req.user);
+    return res.status(200).json({ user: req.user });
   } catch (err) {
     return next(err);
   }

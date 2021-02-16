@@ -58,7 +58,7 @@ export default function Conversation({ header }) {
           {header ? auth.user.username : "Username"}
         </Typography>
         {!header ? (
-          <Typography variant="p" className={classes.userState}>
+          <Typography variant="h6" className={classes.userState}>
             hey ther spud!
           </Typography>
         ) : null}

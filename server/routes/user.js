@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const {
-  userValidationRules,
-  validate,
-} = require("../validators/userValidators");
+const { userValidationRules, validate } = require("../middleware/validators");
 const userController = require("../controllers/userController");
 const passport = require("passport");
+const { requireSignin } = require("../middleware/requireSignin");
 
 // api/users
 router.get(
@@ -14,14 +12,20 @@ router.get(
   userController.read
 );
 
-router.post("/create", userValidationRules(), validate, userController.create);
+router.post("/", userValidationRules(), validate, userController.create);
+
+router.post("/login", requireSignin, userController.login);
 
 router.post(
-  "/login",
-  passport.authenticate("local", { session: false }),
-  userController.login
+  "/logout",
+  passport.authenticate("jwt", { session: false }),
+  userController.logout
 );
 
-router.post("/logout", userController.logout);
+router.get(
+  "/reAuth",
+  passport.authenticate("jwt", { session: false }),
+  userController.reAuth
+);
 
 module.exports = router;
