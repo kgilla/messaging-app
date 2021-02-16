@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Conversation = require("../models/Conversation");
+const mongoose = require("mongoose");
 
 exports.create = async (req, res, next) => {
   try {
@@ -29,7 +30,7 @@ exports.create = async (req, res, next) => {
 exports.read = async (req, res, next) => {
   try {
     const data = await Conversation.aggregate([
-      { $match: { users: req.user._id } },
+      { $match: { users: mongoose.Types.ObjectId(req.user._id) } },
       {
         $lookup: {
           from: "users",
