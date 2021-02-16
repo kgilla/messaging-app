@@ -29,13 +29,11 @@ export default function LoginForm() {
 
   const onSubmit = async (data) => {
     const response = await auth.login(data);
-    console.log(response);
     if (response.user) {
       setError(false);
-      console.log("success");
       // move forward
-    } else if (response.msg) {
-      setError({ msg: response.msg });
+    } else if (response.error) {
+      setError({ msg: response.error });
     } else {
       setError({ msg: "Server Error" });
     }

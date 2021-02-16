@@ -38,8 +38,7 @@ module.exports = passport.use(
     },
     async (payload, done) => {
       try {
-        const user = await User.findById(payload.user._id);
-        user ? done(null, user) : done(null, false);
+        payload.user ? done(null, user) : done(null, false);
       } catch (err) {
         return done(err, false);
       }

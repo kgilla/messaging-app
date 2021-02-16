@@ -43,3 +43,15 @@ exports.login = (req, res, next) => {
     return next(err);
   }
 };
+
+exports.reAuth = async (req, res, next) => {
+  try {
+    if (req.user) {
+      return res.status(200).json({ user: req.user });
+    } else {
+      return next();
+    }
+  } catch (err) {
+    return next(err);
+  }
+};

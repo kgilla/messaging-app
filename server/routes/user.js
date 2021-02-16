@@ -15,4 +15,10 @@ router.get(
 router.post("/", userValidationRules(), validate, userController.create);
 router.post("/login", requireSignin, userController.login);
 
+router.get(
+  "/reAuth",
+  passport.authenticate("jwt", { session: false }),
+  userController.reAuth
+);
+
 module.exports = router;

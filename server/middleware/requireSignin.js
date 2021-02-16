@@ -5,8 +5,8 @@ const requireSignin = function (req, res, next) {
     if (err || !user) {
       const err = {};
       err.status = 400;
-      err.code = "ValidationFailed";
-      err.msg = info.msg;
+      err.code = "CP_SI_ValidationFailed";
+      err.error = info.msg;
       return res.json(err);
     }
     req.user = user;
