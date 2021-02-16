@@ -38,7 +38,7 @@ module.exports = passport.use(
     },
     async (payload, done) => {
       try {
-        payload.user ? done(null, user) : done(null, false);
+        payload.user ? done(null, payload.user) : done(null, false);
       } catch (err) {
         return done(err, false);
       }
