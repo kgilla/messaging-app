@@ -13,28 +13,8 @@ import { useAuth } from "hooks/useAuth";
 const useStyles = makeStyles((theme) => ({
   root: {},
 
-  test: {
-    height: "100vh",
-  },
-
-  messengerMain: {},
-
   header: {
     height: "15vh",
-  },
-
-  main: {
-    height: "70vh",
-    width: "100%",
-    padding: "8px",
-    overflowY: "scroll",
-  },
-
-  footer: {
-    height: "15vh",
-    width: "100%",
-    padding: "8px",
-    background: "#fff",
   },
 }));
 

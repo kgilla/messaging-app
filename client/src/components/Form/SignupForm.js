@@ -54,7 +54,7 @@ export default function SignupForm() {
     if (response.errors) {
       setFormErrors(response.errors);
     } else {
-      history.pushState("/messages");
+      history.push("/messages");
     }
   };
 

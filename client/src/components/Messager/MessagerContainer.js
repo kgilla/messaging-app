@@ -17,6 +17,7 @@ export default function MessagerContainer() {
   const [allConvos, setAllConvos] = useState(null);
 
   const classes = useStyles();
+  const auth = useAuth();
 
   useEffect(() => {
     const getData = async () => {
@@ -48,8 +49,25 @@ export default function MessagerContainer() {
     open ? setOpen(false) : setOpen(true);
   };
 
+  const createConversation = async (recipient) => {
+    const response = await fetch("/api/convos", {
+      method: "post",
+      body: JSON.stringify({ recipient: recipient._id }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    const conversation = {
+      ...data.conversation,
+      users: [auth.user, recipient],
+    };
+    setAllConvos((oldConvos) => [...oldConvos, conversation]);
+    setCurrentConvo(conversation);
+  };
+
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={0}>
       {/* Small screen sidebar menu */}
       <Hidden mdUp>
         <Drawer
@@ -65,6 +83,7 @@ export default function MessagerContainer() {
             changeConvo={handleConvoChange}
             currentConvo={currentConvo}
             toggleDrawer={toggleDrawer}
+            createConversation={createConversation}
           />
         </Drawer>
       </Hidden>
@@ -76,6 +95,7 @@ export default function MessagerContainer() {
             changeConvo={handleConvoChange}
             currentConvo={currentConvo}
             toggleDrawer={toggleDrawer}
+            createConversation={createConversation}
           />
         </Grid>
       </Hidden>

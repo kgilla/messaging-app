@@ -22,7 +22,7 @@ exports.read = async (req, res, next) => {
     const messages = await Message.find({
       conversation: req.params.convoID,
     })
-      .sort({ dateCreated: -1 })
+      // .sort({ dateCreated: -1 })
       .skip(page)
       .limit(30)
       .populate("author");

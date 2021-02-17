@@ -44,12 +44,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SearchResult({ user, i, createConversation }) {
+export default function SearchResult({
+  user,
+  i,
+  createConversation,
+  clearSearchResults,
+}) {
   const classes = useStyles();
 
   const randomImage = (i) => {
     const images = [image1, image2, image3, image4, image5, image6, image7];
     return images[i % 7];
+  };
+
+  const handleClick = () => {
+    createConversation(user);
+    clearSearchResults();
   };
 
   return (
@@ -61,7 +71,7 @@ export default function SearchResult({ user, i, createConversation }) {
           {user.username}
         </Typography>
       </div>
-      <Button onClick={() => createConversation(user)}>+</Button>
+      <Button onClick={handleClick}>+</Button>
     </Paper>
   );
 }

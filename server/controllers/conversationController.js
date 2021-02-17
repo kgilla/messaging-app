@@ -7,7 +7,8 @@ exports.create = async (req, res, next) => {
     const oldConversation = await Conversation.find({
       users: { $all: [req.body.recipient, req.user._id] },
     });
-    if (oldConversation.length < 1) {
+    console.log(oldConversation);
+    if (oldConversation.length > 0) {
       return res.status(400).json({
         message: "Conversation alreay exists",
       });
@@ -74,4 +75,11 @@ exports.read = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
+};
+
+exports.test = async (req, res, next) => {
+  const convos = await Conversation.find({
+    users: mongoose.Types.ObjectId(req.user._id),
+  });
+  return res.json(convos);
 };

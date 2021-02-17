@@ -31,10 +31,22 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     padding: "8px",
   },
+
+  subHeading: {
+    margin: "8px 0",
+    fontSize: "16px",
+    fontWeight: 600,
+  },
 }));
 
 export default function Sidebar(props) {
-  const { allConvos, changeConvo, currentConvo, toggleDrawer } = props;
+  const {
+    allConvos,
+    changeConvo,
+    currentConvo,
+    toggleDrawer,
+    createConversation,
+  } = props;
   const [input, setInput] = useState("");
   const [searchResults, setSearchResults] = useState(null);
   const classes = useStyles();
@@ -43,10 +55,6 @@ export default function Sidebar(props) {
   const handleInputChange = (e) => {
     setInput(e.target.value);
     searchResults && setSearchResults(null);
-  };
-
-  const createConversation = (recipient) => {
-    console.log(recipient);
   };
 
   const handleSubmit = async (e) => {
@@ -70,6 +78,10 @@ export default function Sidebar(props) {
     );
   };
 
+  const clearSearchResults = () => {
+    setSearchResults(null);
+  };
+
   return (
     <Grid className={classes.root}>
       <Grid item className={classes.header}>
@@ -86,8 +98,8 @@ export default function Sidebar(props) {
         <Grid item className={classes.main}>
           {searchResults ? (
             <div>
-              <Typography variant="h6">
-                Search Results ({searchResults.length})
+              <Typography variant="h6" className={classes.subHeading}>
+                Search Results ({searchResults?.length})
               </Typography>
               {searchResults.length ? (
                 searchResults.map((result, i) => (
@@ -96,14 +108,19 @@ export default function Sidebar(props) {
                     user={result}
                     i={i}
                     createConversation={createConversation}
+                    clearSearchResults={clearSearchResults}
                   />
                 ))
               ) : (
-                <Typography>No Results</Typography>
+                <Typography variant="h6" className={classes.subHeading}>
+                  No Results
+                </Typography>
               )}
             </div>
           ) : null}
-          <Typography variant="h6">Your Conversations</Typography>
+          <Typography variant="h6" className={classes.subHeading}>
+            Your Conversations ({allConvos?.length})
+          </Typography>
           {allConvos &&
             filterConvos(input).map((convo, i) => (
               <Conversation

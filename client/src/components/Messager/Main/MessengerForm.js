@@ -24,8 +24,9 @@ const useStyles = makeStyles((theme) => ({
 
   messengerForm: {
     height: "15vh",
-    padding: "16px",
+    margin: "0 24px",
     background: "#fff",
+    boxSizing: "border-box",
   },
 
   messengerInput: {

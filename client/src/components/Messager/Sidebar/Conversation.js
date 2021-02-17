@@ -16,10 +16,14 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     display: "flex",
     alignItems: "center",
-    margin: "4px 0",
-    padding: "32px 16px",
-    border: "none",
+    margin: "8px 0",
+    padding: "16px",
+    border: "1px solid #eee",
     background: "none",
+    "&:hover": {
+      cursor: "pointer",
+      background: "#fff",
+    },
   },
 
   circle: {
@@ -80,7 +84,7 @@ export default function Conversation({ convo, changeConvo, currentConvo, i }) {
           {recipient()}
         </Typography>
         <Typography variant="h6" className={classes.userState}>
-          {convo.messages[0]?.content}
+          {convo.messages?.[0]?.content}
         </Typography>
       </div>
     </Paper>
