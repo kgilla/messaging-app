@@ -24,7 +24,8 @@ exports.read = async (req, res, next) => {
     })
       .sort({ dateCreated: -1 })
       .skip(page)
-      .limit(30);
+      .limit(30)
+      .populate("author");
     res.status(200).json({
       messages,
     });

@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../hooks/useAuth";
-import { baseUrl } from "../../config/const";
+import { useAuth } from "hooks/useAuth";
 import { Grid, Hidden, Drawer, makeStyles } from "@material-ui/core";
 
-import Sidebar from "./Sidebar";
-import MessengerMain from "./MessengerMain";
+import Sidebar from "./Sidebar/Sidebar";
+import MessengerMain from "./Main/MessengerMain";
 
-const useStyles = makeStyles((theme) => ({
-  root: {},
-
+const useStyles = makeStyles(() => ({
   drawerPaper: {
     width: "350px",
-  },
-
-  fullHeight: {
-    height: "100vh",
   },
 }));
 
@@ -23,7 +16,7 @@ export default function MessagerContainer() {
   const [currentConvo, setCurrentConvo] = useState(null);
   const [allConvos, setAllConvos] = useState(null);
 
-  const auth = useAuth();
+  const classes = useStyles();
 
   useEffect(() => {
     const getData = async () => {
@@ -33,7 +26,7 @@ export default function MessagerContainer() {
         });
         if (response.ok) {
           let data = await response.json();
-          console.log(data);
+          setAllConvos(data);
         } else {
           console.log(response);
         }
@@ -44,20 +37,20 @@ export default function MessagerContainer() {
     getData();
   }, []);
 
-  const classes = useStyles();
-
   // handles sidebar clicking to populate messenger main
   const handleConvoChange = (newConvo) => {
     setCurrentConvo(newConvo);
+    open && toggleDrawer();
   };
 
   // handles clicks for sidebar drawer when page width is small enough to show
-  const toggleDrawer = (e) => {
+  const toggleDrawer = () => {
     open ? setOpen(false) : setOpen(true);
   };
 
   return (
     <Grid container spacing={2}>
+      {/* Small screen sidebar menu */}
       <Hidden mdUp>
         <Drawer
           anchor="left"
@@ -67,17 +60,30 @@ export default function MessagerContainer() {
             paper: classes.drawerPaper,
           }}
         >
-          <Sidebar />
+          <Sidebar
+            allConvos={allConvos}
+            changeConvo={handleConvoChange}
+            currentConvo={currentConvo}
+            toggleDrawer={toggleDrawer}
+          />
         </Drawer>
       </Hidden>
+      {/* Regular sized screen sidebar */}
       <Hidden smDown>
-        {" "}
-        <Grid item md={4} className={classes.fullHeight}>
-          <Sidebar />
+        <Grid item md={4}>
+          <Sidebar
+            allConvos={allConvos}
+            changeConvo={handleConvoChange}
+            currentConvo={currentConvo}
+            toggleDrawer={toggleDrawer}
+          />
         </Grid>
       </Hidden>
-      <Grid item xs={12} md={8} className={classes.fullHeight} style={{}}>
-        <MessengerMain toggleDrawer={toggleDrawer} />
+      <Grid item xs={12} md={8}>
+        <MessengerMain
+          toggleDrawer={toggleDrawer}
+          currentConvo={currentConvo}
+        />
       </Grid>{" "}
     </Grid>
   );

@@ -6,6 +6,7 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useAuth } from "../../hooks/useAuth";
+import { useHistory } from "react-router-dom";
 
 const schema = yup.object().shape({
   username: yup
@@ -46,13 +47,15 @@ export default function SignupForm() {
 
   const auth = useAuth();
   const classes = useStyles();
+  const history = useHistory();
 
   const onSubmit = async (data) => {
     const response = await auth.signup(data);
     if (response.errors) {
       setFormErrors(response.errors);
+    } else {
+      history.pushState("/messages");
     }
-    console.log(response.errors);
   };
 
   return (

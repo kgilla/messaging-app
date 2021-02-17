@@ -13,8 +13,6 @@ import PrivateRoute from "./components/PrivateRoute";
 export default function Routes() {
   const auth = useAuth();
 
-  console.log(auth.user);
-
   return (
     <Router>
       <Switch>
@@ -28,6 +26,7 @@ export default function Routes() {
         <Route path="/login">
           <FormContainer formType="login" />
         </Route>
+        <Redirect to={auth.user ? "/messenger" : "/login"} />
       </Switch>
     </Router>
   );

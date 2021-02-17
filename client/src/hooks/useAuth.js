@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
-import { baseUrl } from "../config/const";
 
 const authContext = createContext();
 
@@ -54,12 +53,13 @@ function useProvideAuth() {
   const logout = async () => {
     try {
       setUser(null);
-      const response = await fetch(`${baseUrl}/users/logout`, {
+      const response = await fetch("/api/users/logout", {
         method: "post",
       });
       if (response.ok) {
-        // TODO issue some logout flash message
+        console.log("success");
       }
+      console.log(response);
     } catch (err) {
       console.log(err);
     }
@@ -68,17 +68,17 @@ function useProvideAuth() {
   const signup = async (values) => {
     try {
       const { username, email, password } = values;
-      const response = await fetch("/api/users/create", {
+      const response = await fetch("/api/users/", {
         method: "post",
         body: JSON.stringify({ username, email, password }),
         headers: {
           "Content-Type": "application/json",
         },
       });
+      const data = await response.json();
       if (response.ok) {
         setUser(data.user);
       }
-      const data = await response.json();
       return data;
     } catch (err) {
       console.log(err);
