@@ -59,9 +59,7 @@ export default function Sidebar(props) {
       });
       if (response.ok) {
         const data = await response.json();
-        const filteredData = data.users.filter(
-          (user) => user._id !== auth.user._id
-        );
+        const filteredData = filterSearchResults(data.users);
         setSearchResults(filteredData);
       }
     } catch (err) {}
@@ -72,6 +70,13 @@ export default function Sidebar(props) {
       c.users.some((user) =>
         user.username.toLowerCase().includes(input.toLowerCase())
       )
+    );
+  };
+
+  const filterSearchResults = (searchResults) => {
+    const users = allConvos.reduce((a, b) => a.concat(b.users), []);
+    return searchResults.filter(
+      (user) => !users.some((u) => u._id === user._id)
     );
   };
 
