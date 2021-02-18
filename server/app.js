@@ -3,6 +3,7 @@ const express = require("express");
 const { join } = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const cors = require("cors");
 const passport = require("passport");
 
 // imports passport config for local and jwt strategies
@@ -26,6 +27,7 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 const app = express();
 
 app.use(passport.initialize());
+app.use(cors());
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));

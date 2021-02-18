@@ -9,21 +9,13 @@ module.exports = passport.use(
     try {
       const user = await User.findOne({ username });
       if (!user) {
-        return done(null, false, {
-          message: "Username does not exist",
-          name: "username",
-        });
+        return done(null, false, { msg: "Invalid Credentials" });
       } else {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
-          return done(null, user, {
-            message: `Welcome back ${user.name}!`,
-          });
+          return done(null, user, { msg: "Success" });
         } else {
-          return done(null, false, {
-            message: "Incorrect password",
-            name: "password",
-          });
+          return done(null, false, { msg: "Invalid Credentials" });
         }
       }
     } catch (err) {
@@ -35,7 +27,6 @@ module.exports = passport.use(
 const cookieExtractor = (req) => {
   let token;
   if (req && req.cookies) token = req.cookies["token"];
-  console.log(token);
   return token;
 };
 
