@@ -37,10 +37,12 @@ const convoQuery = (userID) => {
               as: "author",
             },
           },
+          { $unwind: "$author" },
         ],
-        as: "messages",
+        as: "latestMessage",
       },
     },
+    { $unwind: "$latestMessage" },
   ];
 };
 
