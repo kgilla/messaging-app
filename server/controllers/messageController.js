@@ -29,7 +29,7 @@ exports.read = async (req, res, next) => {
       .populate("author");
     if (messages.length > 0) {
       res.status(200).json({
-        messages,
+        messages: messages.reverse(),
       });
     } else {
       res.status(400).json({
