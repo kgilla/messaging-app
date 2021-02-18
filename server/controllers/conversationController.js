@@ -71,7 +71,9 @@ exports.read = async (req, res, next) => {
           as: "latestMessage",
         },
       },
-      { $unwind: "$latestMessage" },
+      {
+        $unwind: { path: "$latestMessage", preserveNullAndEmptyArrays: true },
+      },
     ]);
     return res.status(200).json(data);
   } catch (err) {

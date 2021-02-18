@@ -43,6 +43,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Sidebar(props) {
   const { allConvos, changeConvo, currentConvo, createConversation } = props;
 
+  console.log(allConvos);
+
   const [input, setInput] = useState("");
   const [searchResults, setSearchResults] = useState(null);
 

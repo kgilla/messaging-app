@@ -66,7 +66,9 @@ export default function Message({ message }) {
     auth.user._id === message.author._id ? (
     <div className={`${classes.message} ${classes.right}`}>
       <header className={`${classes.messageHeader} ${classes.right}`}>
-        <span>{moment(message.dateCreated).startOf("hour").fromNow()}</span>
+        <span>
+          {moment(message.dateCreated).format("MMMM Do YYYY, h:mm:ss a")}
+        </span>
       </header>
       <main className={classes.myMessage}>{message.content}</main>
     </div>
@@ -80,7 +82,9 @@ export default function Message({ message }) {
       <div className={classes.message}>
         <header className={classes.messageHeader}>
           <span>{message.author.username + " "}</span>
-          <span>{moment(message.dateCreated).startOf("hour").fromNow()}</span>
+          <span>
+            {moment(message.dateCreated).format("MMMM Do YYYY, h:mm:ss a")}
+          </span>
         </header>
         <main className={classes.otherMessage}>{message.content}</main>
       </div>

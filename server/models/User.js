@@ -27,7 +27,7 @@ const userSchema = new Schema({
     required: [true, "A password is required"],
     minLength: [6, "Password must be at least 6 characters long"],
   },
-  dateCreated: { type: Date, default: new Date() },
+  dateCreated: { type: Date, default: Date.now },
   dateEdited: { type: Date },
 });
 
