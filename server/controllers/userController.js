@@ -45,13 +45,5 @@ exports.login = (req, res, next) => {
 };
 
 exports.reAuth = async (req, res, next) => {
-  try {
-    if (req.user) {
-      return res.status(200).json({ user: req.user });
-    } else {
-      return next();
-    }
-  } catch (err) {
-    return next(err);
-  }
+  return req.user ? res.status(200).json({ user: req.user }) : next();
 };

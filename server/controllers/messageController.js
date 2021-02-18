@@ -18,13 +18,14 @@ exports.create = async (req, res, next) => {
 
 exports.read = async (req, res, next) => {
   try {
-    const page = 30 * req.query.page;
+    const page = req.query.size * req.query.page;
     const messages = await Message.find({
       conversation: req.params.convoID,
     })
       .sort({ dateCreated: -1 })
       .skip(page)
-      .limit(30);
+      .limit(30)
+      .populate("author");
     res.status(200).json({
       messages,
     });
