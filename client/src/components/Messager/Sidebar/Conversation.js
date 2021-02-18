@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Typography, Paper, makeStyles } from "@material-ui/core";
 import { useAuth } from "hooks/useAuth";
 import {
@@ -48,26 +48,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Conversation({ convo, changeConvo, currentConvo }) {
-  const [image, setImage] = useState("");
   const classes = useStyles();
   const auth = useAuth();
-
-  useEffect(() => {
-    setImage(randomImage());
-  }, []);
 
   const recipient = () => {
     const user = convo.users.filter((user) => user._id !== auth.user._id);
     return user[0].username;
   };
 
-  const randomImage = (i) => {
-    const images = [image1, image2, image3, image4, image5, image6, image7];
-    return images[Math.floor(Math.random() * 7)];
+  const stringTrimmer = (string) => {
+    if (!string) return;
+    return string.length > 25 ? string.slice(0, 25) + "..." : string;
   };
 
-  const stringTrimmer = (string) => {
-    return string.length > 20 ? string.slice(0, 40) + "..." : string;
+  const randomImage = () => {
+    const images = [image1, image2, image3, image4, image5, image6, image7];
+    return images[Math.floor(Math.random() * 7)];
   };
 
   return (
@@ -80,19 +76,17 @@ export default function Conversation({ convo, changeConvo, currentConvo }) {
       variant="outlined"
       onClick={() => changeConvo(convo)}
     >
-      {image && (
-        <img
-          src={image}
-          alt="message-recipient"
-          className={classes.userImage}
-        />
-      )}
+      <img
+        src={randomImage()}
+        alt="message-recipient"
+        className={classes.userImage}
+      />
       <div className={classes.main}>
         <Typography variant="h6" className={classes.username}>
           {recipient()}
         </Typography>
         <Typography variant="h6" className={classes.lastMessage}>
-          {convo.latestMessage?.content.slice(0, 25)}
+          {stringTrimmer(convo.latestMessage?.content)}
         </Typography>
       </div>
     </Paper>
