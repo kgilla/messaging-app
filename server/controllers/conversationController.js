@@ -28,7 +28,6 @@ exports.create = async (req, res, next) => {
 // grabs all conversations from auth user, populates the users, and grabs the most recent message and populates the author
 exports.read = async (req, res, next) => {
   try {
-    console.log(convoQuery(req.user._id));
     const data = await Conversation.aggregate(convoQuery(req.user._id));
     return res.status(200).json(data);
   } catch (err) {
