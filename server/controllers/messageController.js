@@ -18,8 +18,8 @@ exports.create = async (req, res, next) => {
 
 exports.read = async (req, res, next) => {
   try {
-    const limit = req.query.size * 1;
-    const page = limit * req.query.page;
+    const limit = req.query.size * 1 || 50;
+    const page = limit * req.query.page || 0;
     const messages = await Message.find({
       conversation: req.params.convoID,
     })
