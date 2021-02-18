@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   moreButton: {
-    color: "#aaa",
+    color: "#bbb",
   },
 }));
 
@@ -88,6 +88,7 @@ export default function SidebarHeader() {
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleClick}
+        className={classes.moreButton}
       >
         <MoreHorizIcon />
       </Button>

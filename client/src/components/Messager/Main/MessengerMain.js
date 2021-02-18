@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
     height: "70vh",
     width: "100%",
     padding: "32px",
+    boxSizing: "border-box",
     overflowY: "scroll",
   },
 
@@ -29,6 +30,7 @@ export default function MessengerMain(props) {
   const [messages, setMessages] = useState(null);
   const [page, SetPage] = useState(0);
   const classes = useStyles();
+  const messagesRef = useRef();
 
   useEffect(() => {
     const getMessages = async () => {
@@ -43,6 +45,7 @@ export default function MessengerMain(props) {
           ? setMessages(data.messages, ...messages)
           : setMessages(data.messages);
         setIsLoading(false);
+        scrollIntoView();
       } catch (err) {
         console.log(err);
       }
@@ -69,15 +72,14 @@ export default function MessengerMain(props) {
         : setMessages([data.message]);
       setIsLoading(false);
       updateConversation(data.message);
+      scrollIntoView();
     } catch (err) {
       console.log(err);
     }
   };
 
-  const AlwaysScrollToBottom = () => {
-    const elementRef = useRef();
-    useEffect(() => elementRef.current.scrollIntoView());
-    return <div ref={elementRef} />;
+  const scrollIntoView = () => {
+    messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   };
 
   return (
@@ -86,13 +88,12 @@ export default function MessengerMain(props) {
         currentConvo={currentConvo}
         toggleDrawer={toggleDrawer}
       />
-      <div className={classes.main}>
+      <div className={classes.main} ref={messagesRef}>
         {isLoading ? (
           <CircularProgress className={classes.centered} />
         ) : (
           messages && messages.map((m) => <Message key={m._id} message={m} />)
         )}
-        <AlwaysScrollToBottom />
       </div>
       <MessengerForm handleNewMessage={handleNewMessage} />
     </>

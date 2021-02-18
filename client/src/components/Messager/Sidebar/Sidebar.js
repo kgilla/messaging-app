@@ -7,6 +7,8 @@ import SearchResults from "./SearchResults";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    height: "100vh",
+    maxHeight: "100vh",
     padding: "0 16px",
     boxSizing: "border-box",
   },
@@ -18,12 +20,14 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
 
-  sidebarMain: { height: "85vh", width: "100%" },
+  sidebarMain: { height: "85vh", width: "100%", boxSizing: "border-box" },
 
   main: {
     height: "70vh",
+    maxHeight: "70vh",
     width: "100%",
-    padding: "8px",
+    padding: "0 8px",
+    boxSizing: "border-box",
     overflowY: "scroll",
   },
 
@@ -117,7 +121,6 @@ export default function Sidebar(props) {
               createConversation={createConversation}
             />
           )}
-
           <Typography variant="h6" className={classes.subHeading}>
             Your Conversations ({allConvos?.length})
           </Typography>

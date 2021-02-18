@@ -12,10 +12,12 @@ const schema = yup.object().shape({
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "15vh",
+    maxHeight: "15vh",
     display: "flex",
     alignItems: "center",
     margin: "0 24px",
     boxSizing: "border-box",
+    overflow: "scroll",
   },
 
   messengerInput: {
