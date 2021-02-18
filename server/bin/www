@@ -9,6 +9,7 @@ require("dotenv").config();
 
 var app = require("../app");
 var http = require("http");
+const socketapi = require("../socket");
 
 /**
  * Get port from environment and store in Express.
@@ -22,6 +23,16 @@ app.set("port", port);
  */
 
 var server = http.createServer(app);
+
+/**
+ * Socket.io
+ */
+require("../socket").attach(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
 
 /**
  * Listen on provided port, on all network interfaces.
