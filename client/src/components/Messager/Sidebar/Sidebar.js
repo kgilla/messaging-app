@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Grid, Typography, makeStyles } from "@material-ui/core";
 import Conversation from "./Conversation";
 import SidebarHeader from "./SidebarHeader";
@@ -53,6 +53,7 @@ export default function Sidebar(props) {
   const [searchResults, setSearchResults] = useState(null);
 
   const classes = useStyles();
+  const mainRef = useRef();
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
@@ -69,6 +70,7 @@ export default function Sidebar(props) {
         const data = await response.json();
         const filteredData = filterSearchResults(data.users);
         setSearchResults(filteredData);
+        scrollToTop();
       } else {
         createSnack({
           message: "Something went wrong on our end",
@@ -76,6 +78,10 @@ export default function Sidebar(props) {
         });
       }
     } catch (err) {}
+  };
+
+  const scrollToTop = () => {
+    mainRef.current.scrollTop = 0;
   };
 
   const filterConvos = (input) => {
@@ -113,7 +119,7 @@ export default function Sidebar(props) {
           />
         </Grid>
 
-        <Grid item className={classes.main}>
+        <Grid item className={classes.main} ref={mainRef}>
           {searchResults && (
             <SearchResults
               searchResults={searchResults}

@@ -48,7 +48,6 @@ export default function MessengerForm({ handleNewMessage }) {
         name="content"
         variant="outlined"
         placeholder="Type something..."
-        multiline
         fullWidth
         className={classes.messengerInput}
         inputRef={register}
