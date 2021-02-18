@@ -35,7 +35,7 @@ export default function MessengerMain(props) {
       try {
         setIsLoading(true);
         const response = await fetch(
-          `/api/convos/${currentConvo._id}/messages/?page=${page}`,
+          `/api/convos/${currentConvo._id}/messages/?page=${page}&size=50`,
           { method: "get" }
         );
         const data = await response.json();
@@ -72,6 +72,12 @@ export default function MessengerMain(props) {
     }
   };
 
+  const AlwaysScrollToBottom = () => {
+    const elementRef = useRef();
+    useEffect(() => elementRef.current.scrollIntoView());
+    return <div ref={elementRef} />;
+  };
+
   return (
     <>
       <MessengerHeader
@@ -90,9 +96,3 @@ export default function MessengerMain(props) {
     </>
   );
 }
-
-const AlwaysScrollToBottom = () => {
-  const elementRef = useRef();
-  useEffect(() => elementRef.current.scrollIntoView());
-  return <div ref={elementRef} />;
-};

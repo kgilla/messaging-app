@@ -3,7 +3,7 @@ import { Grid, Typography, makeStyles } from "@material-ui/core";
 import Conversation from "./Conversation";
 import SidebarHeader from "./SidebarHeader";
 import Search from "./Search";
-import SearchResult from "./SearchResult";
+import SearchResults from "./SearchResults";
 import { useAuth } from "hooks/useAuth";
 
 const useStyles = makeStyles((theme) => ({
@@ -12,12 +12,14 @@ const useStyles = makeStyles((theme) => ({
     boxSizing: "border-box",
   },
 
-  header: {
+  sidebarHeader: {
     height: "15vh",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
+
+  sidebarMain: { height: "85vh", width: "100%" },
 
   main: {
     height: "70vh",
@@ -32,18 +34,11 @@ const useStyles = makeStyles((theme) => ({
     padding: "8px",
   },
 
-  subHeading: {
-    margin: "16px 0",
-    color: "#666",
-    fontSize: "16px",
-    fontWeight: 600,
-  },
+  subHeading: theme.subHeading,
 }));
 
 export default function Sidebar(props) {
   const { allConvos, changeConvo, currentConvo, createConversation } = props;
-
-  console.log(allConvos);
 
   const [input, setInput] = useState("");
   const [searchResults, setSearchResults] = useState(null);
@@ -89,7 +84,8 @@ export default function Sidebar(props) {
       <Grid item className={classes.header}>
         <SidebarHeader />
       </Grid>
-      <Grid container style={{ height: "85vh", width: "100%" }}>
+
+      <Grid container className={classes.sidebarMain}>
         <Grid item className={classes.searchContainer}>
           <Search
             handleInputChange={handleInputChange}
@@ -97,29 +93,15 @@ export default function Sidebar(props) {
             handleSubmit={handleSubmit}
           />
         </Grid>
+
         <Grid item className={classes.main}>
-          {searchResults ? (
-            <div>
-              <Typography variant="h6" className={classes.subHeading}>
-                Search Results ({searchResults?.length})
-              </Typography>
-              {searchResults.length ? (
-                searchResults.map((result, i) => (
-                  <SearchResult
-                    key={result._id}
-                    user={result}
-                    i={i}
-                    createConversation={createConversation}
-                    clearSearchResults={clearSearchResults}
-                  />
-                ))
-              ) : (
-                <Typography variant="h6" className={classes.subHeading}>
-                  No Results
-                </Typography>
-              )}
-            </div>
-          ) : null}
+          {searchResults && (
+            <SearchResults
+              searchResults={searchResults}
+              clearSearchResults={clearSearchResults}
+              createConversation={createConversation}
+            />
+          )}
 
           <Typography variant="h6" className={classes.subHeading}>
             Your Conversations ({allConvos?.length})

@@ -41,17 +41,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
 
-  smallCircle: {
-    display: "flex",
-    justifyContent: "flex-start",
-    height: "35px",
-    width: "35px",
-    marginRight: "8px",
-    marginTop: "12px",
-    borderRadius: "100%",
-    background: "#ccc",
-    overflow: "hidden",
-  },
+  smallCircle: theme.smallCircleImage,
 
   right: {
     alignSelf: "flex-end",
@@ -66,9 +56,7 @@ export default function Message({ message }) {
     auth.user._id === message.author._id ? (
     <div className={`${classes.message} ${classes.right}`}>
       <header className={`${classes.messageHeader} ${classes.right}`}>
-        <span>
-          {moment(message.dateCreated).format("MMMM Do YYYY, h:mm:ss a")}
-        </span>
+        <span>{moment(message.dateCreated).format("M-D, h:mm a")}</span>
       </header>
       <main className={classes.myMessage}>{message.content}</main>
     </div>
@@ -82,9 +70,7 @@ export default function Message({ message }) {
       <div className={classes.message}>
         <header className={classes.messageHeader}>
           <span>{message.author.username + " "}</span>
-          <span>
-            {moment(message.dateCreated).format("MMMM Do YYYY, h:mm:ss a")}
-          </span>
+          <span>{moment(message.dateCreated).format("M-D, h:mm a")}</span>
         </header>
         <main className={classes.otherMessage}>{message.content}</main>
       </div>

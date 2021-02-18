@@ -47,11 +47,19 @@ export const theme = createMuiTheme({
   smallCircleImage: {
     display: "flex",
     justifyContent: "flex-start",
-    height: "30px",
-    width: "30px",
-    marginRight: "12px",
+    height: "35px",
+    width: "35px",
+    marginRight: "8px",
+    marginTop: "16px",
     borderRadius: "100%",
     background: "#ccc",
     overflow: "hidden",
+  },
+
+  subHeading: {
+    margin: "16px 0",
+    color: "#666",
+    fontSize: "16px",
+    fontWeight: 600,
   },
 });
