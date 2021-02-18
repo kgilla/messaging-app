@@ -61,9 +61,9 @@ export default function Conversation({ convo, changeConvo, currentConvo }) {
     return string.length > 25 ? string.slice(0, 25) + "..." : string;
   };
 
-  const randomImage = () => {
+  const getImage = () => {
     const images = [image1, image2, image3, image4, image5, image6, image7];
-    return images[Math.floor(Math.random() * 7)];
+    return images[convo.image];
   };
 
   return (
@@ -77,7 +77,7 @@ export default function Conversation({ convo, changeConvo, currentConvo }) {
       onClick={() => changeConvo(convo)}
     >
       <img
-        src={randomImage()}
+        src={getImage()}
         alt="message-recipient"
         className={classes.userImage}
       />

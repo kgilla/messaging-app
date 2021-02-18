@@ -91,6 +91,7 @@ export default function Sidebar(props) {
 
   const clearSearchResults = () => {
     setSearchResults(null);
+    setInput("");
   };
 
   return (

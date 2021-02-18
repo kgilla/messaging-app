@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   myMessage: {
+    width: "fit-content",
     borderRadius: "12px 12px 0 12px",
     padding: "10px",
     background: "#eee",
@@ -28,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   otherMessage: {
+    width: "fit-content",
     borderRadius: "0 12px 12px 12px",
     padding: "10px",
     color: "#fff",

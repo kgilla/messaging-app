@@ -34,7 +34,8 @@ export default function MessagerContainer() {
           method: "get",
         });
         if (response.ok) {
-          const conversations = await response.json();
+          let conversations = await response.json();
+          conversations = conversations.map((c) => assignRandomImage(c));
           setAllConvos(conversations);
           setCurrentConvo(conversations[0]);
           setSnack({
@@ -66,9 +67,10 @@ export default function MessagerContainer() {
       });
       if (response.ok) {
         const data = await response.json();
-        const conversation = {
+        let conversation = {
           ...data.conversation,
           users: [auth.user, recipient],
+          image: Math.floor(Math.random() * 7),
         };
         setAllConvos((oldConvos) => [...oldConvos, conversation]);
         setCurrentConvo(conversation);
@@ -85,6 +87,13 @@ export default function MessagerContainer() {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const assignRandomImage = (conversation) => {
+    return {
+      ...conversation,
+      image: Math.floor(Math.random() * 7),
+    };
   };
 
   // Updates conversation lastMessage
