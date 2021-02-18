@@ -7,6 +7,12 @@ import MessengerMain from "./Main/MessengerMain";
 import Snack from "./Snack";
 
 const useStyles = makeStyles(() => ({
+  root: {
+    maxHeight: "100vh",
+    maxWidth: "100vw",
+    overflow: "hidden",
+  },
+
   drawerPaper: {
     width: "350px",
   },
@@ -107,7 +113,7 @@ export default function MessagerContainer() {
   };
 
   return (
-    <Grid container spacing={0}>
+    <Grid container spacing={0} className={classes.root}>
       {/* Small screen sidebar menu */}
       <Hidden mdUp>
         <Drawer

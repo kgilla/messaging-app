@@ -7,6 +7,8 @@ import SearchResults from "./SearchResults";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    maxHeight: "100vh",
+    heght: "100vh",
     padding: "0 16px",
     boxSizing: "border-box",
   },
