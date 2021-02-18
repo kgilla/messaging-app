@@ -4,6 +4,7 @@ import { Grid, Hidden, Drawer, makeStyles } from "@material-ui/core";
 
 import Sidebar from "./Sidebar/Sidebar";
 import MessengerMain from "./Main/MessengerMain";
+import Snack from "./Snack";
 
 const useStyles = makeStyles(() => ({
   drawerPaper: {
@@ -12,9 +13,10 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function MessagerContainer() {
-  const [open, setOpen] = useState(false);
+  const [isSideOpen, setIsSideOpen] = useState(false);
   const [currentConvo, setCurrentConvo] = useState(null);
   const [allConvos, setAllConvos] = useState(null);
+  const [snack, setSnack] = useState(null);
 
   const classes = useStyles();
   const auth = useAuth();
@@ -29,8 +31,15 @@ export default function MessagerContainer() {
           const conversations = await response.json();
           setAllConvos(conversations);
           setCurrentConvo(conversations[0]);
+          setSnack({
+            message: `Welcome back ${auth.user.username}!`,
+            severity: "success",
+          });
         } else {
-          console.log(response);
+          setSnack({
+            message: "Something went wrong on our end",
+            severity: "error",
+          });
         }
       } catch (err) {
         console.log(err);
@@ -57,8 +66,15 @@ export default function MessagerContainer() {
         };
         setAllConvos((oldConvos) => [...oldConvos, conversation]);
         setCurrentConvo(conversation);
+        setSnack({
+          message: "Conversation created successfully!",
+          severity: "success",
+        });
       } else {
-        // handle errors with flash or small message
+        setSnack({
+          message: "Something went wrong on our end",
+          severity: "error",
+        });
       }
     } catch (err) {
       console.log(err);
@@ -77,12 +93,17 @@ export default function MessagerContainer() {
   // handles sidebar clicking to populate messenger main
   const handleConvoChange = (newConvo) => {
     setCurrentConvo(newConvo);
-    open && toggleDrawer();
+    isSideOpen && toggleDrawer();
   };
 
   // handles clicks for sidebar drawer when page width is small enough to show
   const toggleDrawer = () => {
-    open ? setOpen(false) : setOpen(true);
+    isSideOpen ? setIsSideOpen(false) : setIsSideOpen(true);
+  };
+
+  const createSnack = (data) => {
+    const { message, severity } = data;
+    setSnack({ message, severity });
   };
 
   return (
@@ -91,7 +112,7 @@ export default function MessagerContainer() {
       <Hidden mdUp>
         <Drawer
           anchor="left"
-          open={open}
+          open={isSideOpen}
           onClose={toggleDrawer}
           classes={{
             paper: classes.drawerPaper,
@@ -103,6 +124,7 @@ export default function MessagerContainer() {
             currentConvo={currentConvo}
             toggleDrawer={toggleDrawer}
             createConversation={createConversation}
+            createSnack={createSnack}
           />
         </Drawer>
       </Hidden>
@@ -125,6 +147,7 @@ export default function MessagerContainer() {
           updateConversation={updateConversation}
         />
       </Grid>
+      {snack && <Snack snack={snack} />}
     </Grid>
   );
 }

@@ -4,7 +4,6 @@ import Conversation from "./Conversation";
 import SidebarHeader from "./SidebarHeader";
 import Search from "./Search";
 import SearchResults from "./SearchResults";
-import { useAuth } from "hooks/useAuth";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,13 +37,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Sidebar(props) {
-  const { allConvos, changeConvo, currentConvo, createConversation } = props;
+  const {
+    allConvos,
+    changeConvo,
+    currentConvo,
+    createConversation,
+    createSnack,
+  } = props;
 
   const [input, setInput] = useState("");
   const [searchResults, setSearchResults] = useState(null);
 
   const classes = useStyles();
-  const auth = useAuth();
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
@@ -61,6 +65,11 @@ export default function Sidebar(props) {
         const data = await response.json();
         const filteredData = filterSearchResults(data.users);
         setSearchResults(filteredData);
+      } else {
+        createSnack({
+          message: "Something went wrong on our end",
+          severity: "error",
+        });
       }
     } catch (err) {}
   };
