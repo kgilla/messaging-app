@@ -10,9 +10,11 @@ export const theme = createMuiTheme({
       fontWeight: 600,
     },
   },
+
   palette: {
     primary: { main: "#3A8DFF" },
   },
+
   input: {
     margin: "12px 0",
   },
@@ -22,7 +24,34 @@ export const theme = createMuiTheme({
     maxWidth: "150px",
     margin: "16px auto",
     padding: "16px",
-    fontWeight: "700",
+    fontWeight: 600,
     textTransform: "none",
+  },
+
+  button: {
+    fontWeight: 600,
+    textTransform: "none",
+  },
+
+  circleImage: {
+    display: "flex",
+    justifyContent: "flex-start",
+    height: "50px",
+    width: "50px",
+    marginRight: "16px",
+    borderRadius: "100%",
+    background: "#ccc",
+    overflow: "hidden",
+  },
+
+  smallCircleImage: {
+    display: "flex",
+    justifyContent: "flex-start",
+    height: "30px",
+    width: "30px",
+    marginRight: "12px",
+    borderRadius: "100%",
+    background: "#ccc",
+    overflow: "hidden",
   },
 });

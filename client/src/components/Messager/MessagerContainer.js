@@ -26,8 +26,9 @@ export default function MessagerContainer() {
           method: "get",
         });
         if (response.ok) {
-          let data = await response.json();
-          setAllConvos(data);
+          const conversations = await response.json();
+          setAllConvos(conversations);
+          setCurrentConvo(conversations[0]);
         } else {
           console.log(response);
         }
@@ -38,6 +39,41 @@ export default function MessagerContainer() {
     getData();
   }, []);
 
+  // Creates conversations with users after search
+  const createConversation = async (recipient) => {
+    try {
+      const response = await fetch("/api/convos", {
+        method: "post",
+        body: JSON.stringify({ recipient: recipient._id }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const conversation = {
+          ...data.conversation,
+          users: [auth.user, recipient],
+        };
+        setAllConvos((oldConvos) => [...oldConvos, conversation]);
+        setCurrentConvo(conversation);
+      } else {
+        // handle errors with flash or small message
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // Updates conversation lastMessage
+  const updateConversation = (newMessage) => {
+    let newConvos = allConvos.slice();
+    newConvos = newConvos.map((c) =>
+      c._id === currentConvo._id ? { ...c, latestMessage: newMessage } : c
+    );
+    setAllConvos(newConvos);
+  };
+
   // handles sidebar clicking to populate messenger main
   const handleConvoChange = (newConvo) => {
     setCurrentConvo(newConvo);
@@ -47,23 +83,6 @@ export default function MessagerContainer() {
   // handles clicks for sidebar drawer when page width is small enough to show
   const toggleDrawer = () => {
     open ? setOpen(false) : setOpen(true);
-  };
-
-  const createConversation = async (recipient) => {
-    const response = await fetch("/api/convos", {
-      method: "post",
-      body: JSON.stringify({ recipient: recipient._id }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    const conversation = {
-      ...data.conversation,
-      users: [auth.user, recipient],
-    };
-    setAllConvos((oldConvos) => [...oldConvos, conversation]);
-    setCurrentConvo(conversation);
   };
 
   return (
@@ -103,8 +122,9 @@ export default function MessagerContainer() {
         <MessengerMain
           toggleDrawer={toggleDrawer}
           currentConvo={currentConvo}
+          updateConversation={updateConversation}
         />
-      </Grid>{" "}
+      </Grid>
     </Grid>
   );
 }

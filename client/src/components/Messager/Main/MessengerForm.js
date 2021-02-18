@@ -1,39 +1,28 @@
-import React, { useState, useEffect } from "react";
-
+import React from "react";
 import { useForm } from "react-hook-form";
-
-// Validators
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-//Components
-import {
-  Grid,
-  Button,
-  TextField,
-  Typography,
-  makeStyles,
-} from "@material-ui/core";
+import { TextField, makeStyles } from "@material-ui/core";
 
 const schema = yup.object().shape({
   content: yup.string().required("A message cannot be blank"),
 });
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
-
-  messengerForm: {
+  root: {
     height: "15vh",
+    display: "flex",
+    alignItems: "center",
     margin: "0 24px",
-    background: "#fff",
     boxSizing: "border-box",
   },
 
   messengerInput: {
-    background: "#eee",
+    background: "#F4F6F6",
   },
 }));
-export default function MessengerForm() {
+
+export default function MessengerForm({ handleNewMessage }) {
   const classes = useStyles();
 
   const { register, handleSubmit, errors, reset } = useForm({
@@ -41,12 +30,12 @@ export default function MessengerForm() {
   });
 
   const onSubmit = (data) => {
-    console.log(data);
+    handleNewMessage(data);
     reset();
   };
 
   return (
-    <form className={classes.messengerForm} onSubmit={handleSubmit(onSubmit)}>
+    <form className={classes.root} onSubmit={handleSubmit(onSubmit)}>
       <TextField
         name="content"
         variant="outlined"

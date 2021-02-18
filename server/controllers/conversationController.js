@@ -50,7 +50,7 @@ exports.read = async (req, res, next) => {
                 $expr: { $eq: ["$$id", "$conversation"] },
               },
             },
-            { $sort: { dateCreated: -1 } },
+            { $sort: { _id: -1 } },
             { $limit: 1 },
             {
               $lookup: {
@@ -66,10 +66,12 @@ exports.read = async (req, res, next) => {
                 as: "author",
               },
             },
+            { $unwind: "$author" },
           ],
-          as: "messages",
+          as: "latestMessage",
         },
       },
+      { $unwind: "$latestMessage" },
     ]);
     return res.status(200).json(data);
   } catch (err) {

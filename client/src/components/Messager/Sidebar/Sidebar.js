@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid, Typography, TextField, makeStyles } from "@material-ui/core";
+import { Grid, Typography, makeStyles } from "@material-ui/core";
 import Conversation from "./Conversation";
 import SidebarHeader from "./SidebarHeader";
 import Search from "./Search";
@@ -33,22 +33,19 @@ const useStyles = makeStyles((theme) => ({
   },
 
   subHeading: {
-    margin: "8px 0",
+    margin: "16px 0",
+    color: "#666",
     fontSize: "16px",
     fontWeight: 600,
   },
 }));
 
 export default function Sidebar(props) {
-  const {
-    allConvos,
-    changeConvo,
-    currentConvo,
-    toggleDrawer,
-    createConversation,
-  } = props;
+  const { allConvos, changeConvo, currentConvo, createConversation } = props;
+
   const [input, setInput] = useState("");
   const [searchResults, setSearchResults] = useState(null);
+
   const classes = useStyles();
   const auth = useAuth();
 
@@ -59,15 +56,18 @@ export default function Sidebar(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch(`/api/users/?user=${input}`, {
-      method: "get",
-    });
-    const data = await response.json();
-    const filteredData = data.users.filter(
-      (user) => user._id !== auth.user._id
-    );
-    console.log(filteredData);
-    setSearchResults(filteredData);
+    try {
+      const response = await fetch(`/api/users/?user=${input}`, {
+        method: "get",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const filteredData = data.users.filter(
+          (user) => user._id !== auth.user._id
+        );
+        setSearchResults(filteredData);
+      }
+    } catch (err) {}
   };
 
   const filterConvos = (input) => {
@@ -118,17 +118,17 @@ export default function Sidebar(props) {
               )}
             </div>
           ) : null}
+
           <Typography variant="h6" className={classes.subHeading}>
             Your Conversations ({allConvos?.length})
           </Typography>
           {allConvos &&
-            filterConvos(input).map((convo, i) => (
+            filterConvos(input).map((convo) => (
               <Conversation
                 key={convo._id}
                 convo={convo}
                 changeConvo={changeConvo}
                 currentConvo={currentConvo}
-                i={i}
               />
             ))}
         </Grid>

@@ -1,5 +1,6 @@
 import React from "react";
 import { Typography, Paper, Button, makeStyles } from "@material-ui/core";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import {
   image1,
   image2,
@@ -16,30 +17,25 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    margin: "4px 0",
-    padding: "32px 16px",
+    margin: "8px 0",
+    padding: "16px",
     border: "none",
     background: "none",
   },
 
-  circle: {
+  main: {
     display: "flex",
-    justifyContent: "flex-start",
-    height: "50px",
-    width: "50px",
-    marginRight: "16px",
-    borderRadius: "50%",
-    background: "#ccc",
-    overflow: "hidden",
+    alignItems: "center",
+  },
+
+  circle: theme.circleImage,
+
+  icon: {
+    color: theme.palette.primary.main,
   },
 
   username: {
     fontSize: "16px",
-    fontWeight: 600,
-  },
-
-  userState: {
-    fontSize: "14px",
     fontWeight: 600,
   },
 }));
@@ -63,7 +59,7 @@ export default function SearchResult({
   };
 
   return (
-    <Paper className={classes.root} elevation={1}>
+    <Paper className={classes.root} variant="outlined">
       <div className={classes.main}>
         <img src={randomImage(i)} className={classes.circle} />
 
@@ -71,7 +67,9 @@ export default function SearchResult({
           {user.username}
         </Typography>
       </div>
-      <Button onClick={handleClick}>+</Button>
+      <Button onClick={handleClick}>
+        <AddCircleIcon className={classes.icon} />
+      </Button>
     </Paper>
   );
 }

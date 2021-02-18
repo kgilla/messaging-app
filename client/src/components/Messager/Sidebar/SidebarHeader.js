@@ -1,8 +1,16 @@
-import React from "react";
-import { Typography, Paper, Button, makeStyles } from "@material-ui/core";
+import React, { useState } from "react";
+import {
+  Typography,
+  Paper,
+  Button,
+  Menu,
+  MenuItem,
+  makeStyles,
+} from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import { useAuth } from "hooks/useAuth";
-import { image7 } from "images/conversationImages";
+import { image3 } from "images/conversationImages";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,14 +49,28 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "14px",
     fontWeight: 600,
   },
+
+  moreButton: {
+    color: "#aaa",
+  },
 }));
 
 export default function SidebarHeader() {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
   const classes = useStyles();
   const auth = useAuth();
   const history = useHistory();
 
-  const handleClick = () => {
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
     auth.logout();
     history.push("/");
   };
@@ -56,15 +78,27 @@ export default function SidebarHeader() {
   return (
     <Paper className={classes.root} elevation={1} variant="outlined">
       <div className={classes.main}>
-        <img src={image7} className={classes.circle} />
+        <img src={image3} className={classes.circle} />
 
         <Typography variant="h6" className={classes.username}>
           {auth.user.username}
         </Typography>
       </div>
-      <Button variant="contained" color="primary" onClick={handleClick}>
-        Logout
+      <Button
+        aria-controls="simple-menu"
+        aria-haspopup="true"
+        onClick={handleClick}
+      >
+        <MoreHorizIcon />
       </Button>
+      <Menu
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      </Menu>
     </Paper>
   );
 }

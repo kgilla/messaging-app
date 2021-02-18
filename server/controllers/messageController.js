@@ -2,14 +2,14 @@ const Message = require("../models/Message");
 
 exports.create = async (req, res, next) => {
   try {
-    const message = new Message({
+    const newMessage = new Message({
       author: req.user._id,
       content: req.body.content,
       conversation: req.params.convoID,
     });
-    const savedMessage = await message.save();
+    const message = await newMessage.save();
     res.status(201).json({
-      savedMessage,
+      message,
     });
   } catch (err) {
     return next(err);

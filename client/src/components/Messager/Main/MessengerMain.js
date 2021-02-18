@@ -1,63 +1,76 @@
-import React, { useState, useEffect } from "react";
-import { Grid, Typography, makeStyles } from "@material-ui/core";
-import { useAuth } from "hooks/useAuth";
-
+import React, { useState, useEffect, useRef } from "react";
+import { CircularProgress, makeStyles } from "@material-ui/core";
 import MessengerHeader from "./MessengerHeader";
 import MessengerForm from "./MessengerForm";
 import Message from "./Message";
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
-
   main: {
+    position: "relative",
     display: "flex",
     flexDirection: "column",
     height: "70vh",
     width: "100%",
-    padding: "16px",
+    padding: "32px",
     overflowY: "scroll",
   },
 
-  message: {
-    borderRadius: "16px",
-    padding: "8px",
-  },
-
-  myMessage: {
-    borderRadius: "16px",
-    padding: "8px",
-    margin: "8px 0",
-    alignSelf: "flex-end",
-    background: "#eee",
-  },
-
-  otherMessage: {
-    borderRadius: "16px",
-    padding: "8px",
-    margin: "8px 0",
-    alignSelf: "flex-start",
-    background: "#eee",
+  centered: {
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    transform: "translate(-50%, -50%)",
   },
 }));
 
-export default function MessengerMain({ toggleDrawer, currentConvo }) {
+export default function MessengerMain(props) {
+  const { toggleDrawer, currentConvo, updateConversation } = props;
+  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState(null);
   const [page, SetPage] = useState(0);
   const classes = useStyles();
-  const auth = useAuth();
 
   useEffect(() => {
     const getMessages = async () => {
-      const response = await fetch(
-        `/api/convos/${currentConvo._id}/messages/?page=${page}`,
-        { method: "get" }
-      );
-      const data = await response.json();
-      console.log(data.messages);
-      setMessages(data.messages);
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          `/api/convos/${currentConvo._id}/messages/?page=${page}`,
+          { method: "get" }
+        );
+        const data = await response.json();
+        messages
+          ? setMessages(data.messages, ...messages)
+          : setMessages(data.messages);
+        setIsLoading(false);
+      } catch (err) {
+        console.log(err);
+      }
     };
     if (currentConvo) getMessages();
-  }, [currentConvo]);
+  }, [currentConvo, page]);
+
+  const handleNewMessage = async (newMessage) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        `/api/convos/${currentConvo._id}/messages/`,
+        {
+          method: "post",
+          body: JSON.stringify(newMessage),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      setMessages([...messages, data.message]);
+      setIsLoading(false);
+      updateConversation(data.message);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <>
@@ -65,10 +78,21 @@ export default function MessengerMain({ toggleDrawer, currentConvo }) {
         currentConvo={currentConvo}
         toggleDrawer={toggleDrawer}
       />
-      <Grid item className={classes.main}>
-        {messages && messages.map((m) => <Message key={m._id} message={m} />)}
-      </Grid>
-      <MessengerForm />
+      <div className={classes.main}>
+        {isLoading ? (
+          <CircularProgress className={classes.centered} />
+        ) : (
+          messages && messages.map((m) => <Message key={m._id} message={m} />)
+        )}
+        <AlwaysScrollToBottom />
+      </div>
+      <MessengerForm handleNewMessage={handleNewMessage} />
     </>
   );
 }
+
+const AlwaysScrollToBottom = () => {
+  const elementRef = useRef();
+  useEffect(() => elementRef.current.scrollIntoView());
+  return <div ref={elementRef} />;
+};

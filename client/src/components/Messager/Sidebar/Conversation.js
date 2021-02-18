@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     margin: "8px 0",
     padding: "16px",
-    border: "1px solid #eee",
+    border: "none",
     background: "none",
     "&:hover": {
       cursor: "pointer",
@@ -26,29 +26,28 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
-  circle: {
-    display: "flex",
-    justifyContent: "flex-start",
-    height: "50px",
-    width: "50px",
-    marginRight: "16px",
-    borderRadius: "50%",
-    background: "#ccc",
-    overflow: "hidden",
+  selected: {
+    boxShadow: "0 2px 4px rgb(0 0 0 / 5%), 0 8px 16px rgb(0 0 0 / 5%)",
+    background: "#fff",
   },
+
+  userImage: theme.circleImage,
 
   username: {
     fontSize: "16px",
     fontWeight: 600,
   },
 
-  userState: {
+  lastMessage: {
+    color: "#666",
     fontSize: "14px",
     fontWeight: 600,
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
   },
 }));
 
-export default function Conversation({ convo, changeConvo, currentConvo, i }) {
+export default function Conversation({ convo, changeConvo, currentConvo }) {
   const [image, setImage] = useState("");
   const classes = useStyles();
   const auth = useAuth();
@@ -64,27 +63,36 @@ export default function Conversation({ convo, changeConvo, currentConvo, i }) {
 
   const randomImage = (i) => {
     const images = [image1, image2, image3, image4, image5, image6, image7];
-    return images[i % 7];
+    return images[Math.floor(Math.random() * 7)];
+  };
+
+  const stringTrimmer = (string) => {
+    return string.length > 20 ? string.slice(0, 40) + "..." : string;
   };
 
   return (
     <Paper
-      className={classes.root}
-      elevation={1}
-      variant={
+      className={
         currentConvo && currentConvo._id === convo._id
-          ? "elevation"
-          : "outlined"
+          ? `${classes.root} ${classes.selected}`
+          : `${classes.root}`
       }
+      variant="outlined"
       onClick={() => changeConvo(convo)}
     >
-      <img src={randomImage(i)} className={classes.circle} />
+      {image && (
+        <img
+          src={image}
+          alt="message-recipient"
+          className={classes.userImage}
+        />
+      )}
       <div className={classes.main}>
         <Typography variant="h6" className={classes.username}>
           {recipient()}
         </Typography>
-        <Typography variant="h6" className={classes.userState}>
-          {convo.messages?.[0]?.content}
+        <Typography variant="h6" className={classes.lastMessage}>
+          {convo.latestMessage?.content.slice(0, 25)}
         </Typography>
       </div>
     </Paper>
