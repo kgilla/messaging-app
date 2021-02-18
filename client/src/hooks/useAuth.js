@@ -56,10 +56,9 @@ function useProvideAuth() {
       const response = await fetch("/api/users/logout", {
         method: "post",
       });
-      if (response.ok) {
-        console.log("success");
+      if (!response.ok) {
+        console.log(response);
       }
-      console.log(response);
     } catch (err) {
       console.log(err);
     }

@@ -64,7 +64,9 @@ export default function MessengerMain(props) {
         }
       );
       const data = await response.json();
-      setMessages([...messages, data.message]);
+      messages
+        ? setMessages([...messages, data.message])
+        : setMessages([data.message]);
       setIsLoading(false);
       updateConversation(data.message);
     } catch (err) {
