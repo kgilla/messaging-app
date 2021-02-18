@@ -18,17 +18,24 @@ exports.create = async (req, res, next) => {
 
 exports.read = async (req, res, next) => {
   try {
-    const page = 10 * req.query.page;
+    const limit = req.query.size * 1;
+    const page = limit * req.query.page;
     const messages = await Message.find({
       conversation: req.params.convoID,
     })
       .sort({ _id: -1 })
       .skip(page)
-      .limit(20)
+      .limit(limit)
       .populate("author");
-    res.status(200).json({
-      messages: messages.reverse(),
-    });
+    if (messages.length > 0) {
+      res.status(200).json({
+        messages: messages.reverse(),
+      });
+    } else {
+      res.status(400).json({
+        error: "No messages to show",
+      });
+    }
   } catch (err) {
     return next(err);
   }

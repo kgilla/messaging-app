@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function LoginForm() {
   const [error, setError] = useState(null);
+
   const { register, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
   });
@@ -40,9 +41,9 @@ export default function LoginForm() {
     if (response.user) {
       history.push("/messenger");
     } else if (response.error) {
-      setError({ msg: response.error });
+      setError(response.error);
     } else {
-      setError({ msg: "Server Error" });
+      setError("Server Error");
     }
   };
 
@@ -51,7 +52,7 @@ export default function LoginForm() {
       <Typography variant="h1">Welcome back!</Typography>
       {error && (
         <Alert severity="error" className={classes.error}>
-          {error.msg}
+          {error}
         </Alert>
       )}
       <TextField
