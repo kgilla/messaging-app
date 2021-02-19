@@ -6,7 +6,6 @@ import {
   Redirect,
 } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
-import Loading from "./components/Loading";
 import FormContainer from "./components/Form/FormContainer";
 import MessagerContainer from "./components/Messager/MessagerContainer";
 import PrivateRoute from "./components/PrivateRoute";
