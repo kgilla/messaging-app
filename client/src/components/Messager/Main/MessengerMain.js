@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { CircularProgress, makeStyles } from "@material-ui/core";
 import { useAuth } from "hooks/useAuth";
+import { useSocket } from "hooks/useSocket";
 import MessengerHeader from "./MessengerHeader";
 import MessengerForm from "./MessengerForm";
 import Message from "./Message";
@@ -32,6 +33,7 @@ export default function MessengerMain(props) {
   const [page, SetPage] = useState(0);
 
   const auth = useAuth();
+  const socket = useSocket();
   const classes = useStyles();
   const messagesRef = useRef();
 
@@ -57,6 +59,7 @@ export default function MessengerMain(props) {
   }, [currentConvo, page]);
 
   const handleNewMessage = async (content) => {
+    socket.socket.emit("message", content);
     const message = makeFakeMessage(content);
     try {
       const response = await fetch(

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "hooks/useAuth";
 import { Grid, Hidden, Drawer, makeStyles } from "@material-ui/core";
+import useSocket from "hooks/useSocket";
 
 import Sidebar from "./Sidebar/Sidebar";
 import MessengerMain from "./Main/MessengerMain";

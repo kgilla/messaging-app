@@ -1,10 +1,10 @@
 const io = require("socket.io")();
 
 io.on("connection", (socket) => {
-  console.log("hello!");
+  socket.broadcast.emit("hello");
 
-  socket.on("hello", (payload) => {
-    socket.emit("message", payload);
+  socket.on("message", (msg) => {
+    console.log("message: " + msg);
   });
 });
 
