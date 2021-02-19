@@ -1,5 +1,5 @@
 import React from "react";
-import { CircularProgress, makeStyles } from "@material-ui/core";
+import { CircularProgress, Backdrop, makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles({
   root: {
@@ -8,10 +8,11 @@ const useStyles = makeStyles({
     width: "100vw",
     justifyContent: "center",
     alignItems: "center",
+    background: "rgba(0,0,0,0.4)",
   },
 
   loader: {
-    size: 500,
+    color: "#fff",
   },
 });
 
