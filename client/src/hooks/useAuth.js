@@ -26,7 +26,6 @@ function useProvideAuth() {
           const data = await response.json();
           if (data.user) setUser(data.user);
         }
-
         setIsLoading(false);
       } catch (err) {
         console.log(err);
