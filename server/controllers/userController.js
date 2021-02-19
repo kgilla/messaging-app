@@ -20,6 +20,18 @@ exports.create = async (req, res, next) => {
   }
 };
 
+exports.read = async (req, res, next) => {
+  try {
+    const query = req.query.user;
+    const users = await User.find({
+      username: { $regex: query, $options: "i" },
+    });
+    return res.status(200).json({ users });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 exports.login = (req, res, next) => {
   try {
     const token = jwt.sign({ user: req.user }, process.env.JWT_SECRET);
@@ -30,4 +42,8 @@ exports.login = (req, res, next) => {
   } catch (err) {
     return next(err);
   }
+};
+
+exports.reAuth = async (req, res, next) => {
+  return req.user ? res.status(200).json({ user: req.user }) : next();
 };

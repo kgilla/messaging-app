@@ -9,7 +9,7 @@ const messageSchema = new Schema({
     ref: "Conversation",
     index: true,
   },
-  dateCreated: { type: Date, default: new Date() },
+  dateCreated: { type: Date, default: Date.now },
   dateEdited: { type: Date },
 });
 
