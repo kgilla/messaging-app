@@ -110,7 +110,7 @@ export default function MessengerMain(props) {
         ) : (
           messages &&
           messages.map((m) => (
-            <Message key={m.dateCreated + m.username} message={m} />
+            <Message key={m._id || m.dateCreated + m.author._id} message={m} />
           ))
         )}
       </div>

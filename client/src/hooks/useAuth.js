@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
+import Loading from "components/Loading";
 
 const authContext = createContext();
 
 export function ProvideAuth({ children }) {
   const auth = useProvideAuth();
-  return <authContext.Provider value={auth}>{children}</authContext.Provider>;
+  return auth.isLoading ? (
+    <Loading />
+  ) : (
+    <authContext.Provider value={auth}>{children}</authContext.Provider>
+  );
 }
 
 export const useAuth = () => {
@@ -13,12 +18,11 @@ export const useAuth = () => {
 
 function useProvideAuth() {
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const reAuth = async () => {
       try {
-        setIsLoading(true);
         const response = await fetch("/api/users/reAuth", {
           method: "get",
         });
@@ -26,7 +30,6 @@ function useProvideAuth() {
           const data = await response.json();
           if (data.user) setUser(data.user);
         }
-
         setIsLoading(false);
       } catch (err) {
         console.log(err);
@@ -37,7 +40,6 @@ function useProvideAuth() {
 
   const login = async (values) => {
     try {
-      setIsLoading(true);
       const response = await fetch("/api/users/login", {
         method: "post",
         body: JSON.stringify(values),
@@ -47,7 +49,6 @@ function useProvideAuth() {
       });
       const data = await response.json();
       if (data.user) setUser(data.user);
-      setIsLoading(false);
       return data;
     } catch (err) {
       console.log(err);
@@ -70,7 +71,6 @@ function useProvideAuth() {
 
   const signup = async (values) => {
     try {
-      setIsLoading(true);
       const { username, email, password } = values;
       const response = await fetch("/api/users/", {
         method: "post",
@@ -81,7 +81,6 @@ function useProvideAuth() {
       });
       const data = await response.json();
       if (response.ok) setUser(data.user);
-      setIsLoading(false);
       return data;
     } catch (err) {
       console.log(err);
