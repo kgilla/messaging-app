@@ -38,7 +38,8 @@ export default function MessengerForm({ handleNewMessage }) {
   });
 
   const onSubmit = (data) => {
-    handleNewMessage(data);
+    const { content } = data;
+    handleNewMessage(content);
     reset();
   };
 

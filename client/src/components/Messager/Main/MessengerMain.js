@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { CircularProgress, makeStyles } from "@material-ui/core";
+import { useAuth } from "hooks/useAuth";
 import MessengerHeader from "./MessengerHeader";
 import MessengerForm from "./MessengerForm";
 import Message from "./Message";
@@ -25,10 +26,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function MessengerMain(props) {
-  const { toggleDrawer, currentConvo, updateConversation } = props;
+  const { toggleDrawer, currentConvo, updateConversation, createSnack } = props;
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState(null);
   const [page, SetPage] = useState(0);
+
+  const auth = useAuth();
   const classes = useStyles();
   const messagesRef = useRef();
 
@@ -53,29 +56,42 @@ export default function MessengerMain(props) {
     if (currentConvo) getMessages();
   }, [currentConvo, page]);
 
-  const handleNewMessage = async (newMessage) => {
+  const handleNewMessage = async (content) => {
+    const message = makeFakeMessage(content);
     try {
-      setIsLoading(true);
       const response = await fetch(
         `/api/convos/${currentConvo._id}/messages/`,
         {
           method: "post",
-          body: JSON.stringify(newMessage),
+          body: JSON.stringify({ content }),
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
-      const data = await response.json();
-      messages
-        ? setMessages([...messages, data.message])
-        : setMessages([data.message]);
-      setIsLoading(false);
-      updateConversation(data.message);
-      scrollIntoView();
+      if (!response.ok) {
+        createSnack({
+          message: "Message unable to send",
+          severity: "error",
+        });
+        // Should add some message flag component or just remove the message from the messages array.
+      }
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const makeFakeMessage = (content) => {
+    const message = {
+      dateCreated: Date.now(),
+      conversation: currentConvo,
+      author: auth.user,
+      content,
+    };
+    messages ? setMessages([...messages, message]) : setMessages([message]);
+    updateConversation(message);
+    scrollIntoView();
+    return message;
   };
 
   const scrollIntoView = () => {
@@ -92,7 +108,10 @@ export default function MessengerMain(props) {
         {isLoading ? (
           <CircularProgress className={classes.centered} />
         ) : (
-          messages && messages.map((m) => <Message key={m._id} message={m} />)
+          messages &&
+          messages.map((m) => (
+            <Message key={m.dateCreated + m.username} message={m} />
+          ))
         )}
       </div>
       <MessengerForm handleNewMessage={handleNewMessage} />

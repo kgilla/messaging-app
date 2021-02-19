@@ -13,17 +13,21 @@ export const useAuth = () => {
 
 function useProvideAuth() {
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const reAuth = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch("/api/users/reAuth", {
           method: "get",
         });
-        const data = await response.json();
-        if (data.user) {
-          setUser(data.user);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.user) setUser(data.user);
         }
+
+        setIsLoading(false);
       } catch (err) {
         console.log(err);
       }
@@ -33,6 +37,7 @@ function useProvideAuth() {
 
   const login = async (values) => {
     try {
+      setIsLoading(true);
       const response = await fetch("/api/users/login", {
         method: "post",
         body: JSON.stringify(values),
@@ -41,9 +46,8 @@ function useProvideAuth() {
         },
       });
       const data = await response.json();
-      if (data.user) {
-        setUser(data.user);
-      }
+      if (data.user) setUser(data.user);
+      setIsLoading(false);
       return data;
     } catch (err) {
       console.log(err);
@@ -66,6 +70,7 @@ function useProvideAuth() {
 
   const signup = async (values) => {
     try {
+      setIsLoading(true);
       const { username, email, password } = values;
       const response = await fetch("/api/users/", {
         method: "post",
@@ -75,9 +80,8 @@ function useProvideAuth() {
         },
       });
       const data = await response.json();
-      if (response.ok) {
-        setUser(data.user);
-      }
+      if (response.ok) setUser(data.user);
+      setIsLoading(false);
       return data;
     } catch (err) {
       console.log(err);
@@ -86,6 +90,7 @@ function useProvideAuth() {
 
   return {
     user,
+    isLoading,
     signup,
     login,
     logout,
