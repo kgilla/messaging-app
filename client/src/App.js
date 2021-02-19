@@ -8,18 +8,26 @@ import { io } from "socket.io-client";
 function App() {
   const socket = io("http://localhost:3001");
 
-  socket.on("connect", () => {
-    // either with send()
-    socket.send("Hello!");
+  socket.emit("hello", "This is a payload");
 
-    // or with emit() and custom event names
-    socket.emit(
-      "salutations",
-      "Hello!",
-      { mr: "john" },
-      Uint8Array.from([1, 2, 3, 4])
-    );
+  socket.on("connect", () => {
+    socket.send("Hello!");
   });
+
+  socket.on("message", (payload) => {
+    console.log("new Message!" + payload);
+  });
+
+  socket.on("conversation", () => {
+    console.log("new Conversation!");
+  });
+
+  socket.on("typing", () => {
+    console.log("Typing!");
+  });
+
+  // when entering a conversation, a user is entering a room so to speak
+
   return (
     <MuiThemeProvider theme={theme}>
       <ProvideAuth>
