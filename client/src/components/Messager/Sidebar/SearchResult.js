@@ -61,8 +61,11 @@ export default function SearchResult({
   return (
     <Paper className={classes.root} variant="outlined">
       <div className={classes.main}>
-        <img src={randomImage(i)} className={classes.circle} />
-
+        <img
+          src={randomImage(i)}
+          alt={user.username}
+          className={classes.circle}
+        />
         <Typography variant="h6" className={classes.username}>
           {user.username}
         </Typography>

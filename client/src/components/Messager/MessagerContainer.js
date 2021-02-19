@@ -98,8 +98,7 @@ export default function MessagerContainer() {
 
   // Updates conversation lastMessage
   const updateConversation = (newMessage) => {
-    let newConvos = allConvos.slice();
-    newConvos = newConvos.map((c) =>
+    const newConvos = allConvos.map((c) =>
       c._id === currentConvo._id ? { ...c, latestMessage: newMessage } : c
     );
     setAllConvos(newConvos);
@@ -113,7 +112,7 @@ export default function MessagerContainer() {
 
   // handles clicks for sidebar drawer when page width is small enough to show
   const toggleDrawer = () => {
-    isSideOpen ? setIsSideOpen(false) : setIsSideOpen(true);
+    setIsSideOpen((oldState) => (oldState ? false : true));
   };
 
   const createSnack = (data) => {
@@ -152,6 +151,7 @@ export default function MessagerContainer() {
             currentConvo={currentConvo}
             toggleDrawer={toggleDrawer}
             createConversation={createConversation}
+            createSnack={createSnack}
           />
         </Grid>
       </Hidden>
@@ -160,6 +160,7 @@ export default function MessagerContainer() {
           toggleDrawer={toggleDrawer}
           currentConvo={currentConvo}
           updateConversation={updateConversation}
+          createSnack={createSnack}
         />
       </Grid>
       {snack && <Snack snack={snack} />}
