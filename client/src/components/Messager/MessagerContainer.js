@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "hooks/useAuth";
 import { Grid, Hidden, Drawer, makeStyles } from "@material-ui/core";
 
-import Sidebar from "./Sidebar/Sidebar";
-import MessengerMain from "./Main/MessengerMain";
+import SidebarContainer from "./Sidebar/SidebarContainer";
+import MainContainer from "./Main/MainContainer";
 import Snack from "./Snack";
 
 const useStyles = makeStyles(() => ({
@@ -132,10 +132,10 @@ export default function MessagerContainer() {
             paper: classes.drawerPaper,
           }}
         >
-          <Sidebar
+          <SidebarContainer
             allConvos={allConvos}
-            changeConvo={handleConvoChange}
             currentConvo={currentConvo}
+            changeConvo={handleConvoChange}
             toggleDrawer={toggleDrawer}
             createConversation={createConversation}
             createSnack={createSnack}
@@ -145,10 +145,10 @@ export default function MessagerContainer() {
       {/* Regular sized screen sidebar */}
       <Hidden smDown>
         <Grid item md={4}>
-          <Sidebar
+          <SidebarContainer
             allConvos={allConvos}
-            changeConvo={handleConvoChange}
             currentConvo={currentConvo}
+            changeConvo={handleConvoChange}
             toggleDrawer={toggleDrawer}
             createConversation={createConversation}
             createSnack={createSnack}
@@ -156,9 +156,9 @@ export default function MessagerContainer() {
         </Grid>
       </Hidden>
       <Grid item xs={12} md={8}>
-        <MessengerMain
-          toggleDrawer={toggleDrawer}
+        <MainContainer
           currentConvo={currentConvo}
+          toggleDrawer={toggleDrawer}
           updateConversation={updateConversation}
           createSnack={createSnack}
         />

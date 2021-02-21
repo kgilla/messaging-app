@@ -1,9 +1,16 @@
 import React, { useState, useRef } from "react";
-import { Grid, Typography, makeStyles } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  TextField,
+  InputAdornment,
+  makeStyles,
+} from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
+
 import Conversation from "./Conversation";
 import SidebarHeader from "./SidebarHeader";
-import Search from "./Search";
-import SearchResults from "./SearchResults";
+import SearchResult from "./SearchResult";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -14,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
   },
 
   sidebarHeader: {
-    height: "15vh",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -32,19 +38,28 @@ const useStyles = makeStyles((theme) => ({
   },
 
   searchContainer: {
-    height: "15vh",
     width: "100%",
     padding: "8px",
   },
 
   subHeading: theme.subHeading,
+
+  input: {
+    background: "#F4F6F6",
+    border: "none",
+    outline: "none",
+  },
+
+  icon: {
+    color: "#888",
+  },
 }));
 
-export default function Sidebar(props) {
+export default function SidebarContainer(props) {
   const {
     allConvos,
-    changeConvo,
     currentConvo,
+    changeConvo,
     createConversation,
     createSnack,
   } = props;
@@ -54,11 +69,6 @@ export default function Sidebar(props) {
 
   const classes = useStyles();
   const mainRef = useRef();
-
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-    searchResults && setSearchResults(null);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -78,6 +88,11 @@ export default function Sidebar(props) {
         });
       }
     } catch (err) {}
+  };
+
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+    searchResults && setSearchResults(null);
   };
 
   const scrollToTop = () => {
@@ -111,24 +126,53 @@ export default function Sidebar(props) {
       </Grid>
 
       <Grid container className={classes.sidebarMain}>
-        <Grid item className={classes.searchContainer}>
-          <Search
-            handleInputChange={handleInputChange}
-            input={input}
-            handleSubmit={handleSubmit}
+        //Search Form
+        <form onSubmit={handleSubmit} className={classes.searchContainer}>
+          <Typography variant="h6" className={classes.subHeading}>
+            Chats
+          </Typography>
+          <TextField
+            variant="outlined"
+            placeholder="Search"
+            fullWidth
+            className={classes.input}
+            onChange={handleInputChange}
+            value={input}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon className={classes.icon} />
+                </InputAdornment>
+              ),
+            }}
           />
-        </Grid>
-
+        </form>
         <Grid item className={classes.main} ref={mainRef}>
+          // Scrolling list of conversations and search Results
           {searchResults && (
-            <SearchResults
-              searchResults={searchResults}
-              clearSearchResults={clearSearchResults}
-              createConversation={createConversation}
-            />
+            <>
+              <Typography variant="h6" className={classes.subHeading}>
+                Search Results ({searchResults?.length})
+              </Typography>
+              {searchResults.length ? (
+                searchResults.map((result, i) => (
+                  <SearchResult
+                    key={result._id}
+                    user={result}
+                    i={i}
+                    createConversation={createConversation}
+                    clearSearchResults={clearSearchResults}
+                  />
+                ))
+              ) : (
+                <Typography variant="h6" className={classes.subHeading}>
+                  No Results
+                </Typography>
+              )}
+            </>
           )}
           <Typography variant="h6" className={classes.subHeading}>
-            Your Conversations ({allConvos?.length})
+            Your Conversations ({allConvos?.length || 0})
           </Typography>
           {allConvos &&
             filterConvos(input).map((convo) => (

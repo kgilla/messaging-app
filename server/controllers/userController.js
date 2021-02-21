@@ -46,7 +46,6 @@ exports.login = (req, res, next) => {
 
 exports.logout = (req, res, next) => {
   try {
-    console.log("hello");
     return res.status(200).clearCookie("token").send();
   } catch (err) {
     return next(err);
