@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { CircularProgress, makeStyles } from "@material-ui/core";
+import {
+  Grid,
+  CircularProgress,
+  Typography,
+  Hidden,
+  Paper,
+  Button,
+  makeStyles,
+} from "@material-ui/core";
+import { MoreHoriz, Menu } from "@material-ui/icons";
+
 import { useAuth } from "hooks/useAuth";
 import { useSocket } from "hooks/useSocket";
 import MessengerHeader from "./MessengerHeader";
@@ -7,6 +17,34 @@ import MessengerForm from "./MessengerForm";
 import Message from "./Message";
 
 const useStyles = makeStyles((theme) => ({
+  header: {
+    height: "15vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "0 32px",
+    border: "none",
+    boxShadow: "0 2px 4px rgb(0 0 0 / 5%), 0 8px 16px rgb(0 0 0 / 5%)",
+  },
+
+  flexed: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  button: {
+    marginRight: "16px",
+  },
+
+  heading: {
+    fontWeight: 600,
+  },
+
+  moreButton: {
+    color: "#aaa",
+  },
+
   main: {
     position: "relative",
     display: "flex",
@@ -26,8 +64,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MessengerMain(props) {
+export default function MainContainer(props) {
   const { toggleDrawer, currentConvo, updateConversation, createSnack } = props;
+
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState(null);
   const [page, SetPage] = useState(0);
@@ -97,17 +136,41 @@ export default function MessengerMain(props) {
     return message;
   };
 
+  const recipient = () => {
+    const user = currentConvo.users.filter(
+      (user) => user._id !== auth.user._id
+    );
+    return user[0].username;
+  };
+
   const scrollIntoView = () => {
     messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   };
 
   return (
     <>
-      <MessengerHeader
-        currentConvo={currentConvo}
-        toggleDrawer={toggleDrawer}
-      />
-      <div className={classes.main} ref={messagesRef}>
+      <Paper square variant="outlined" className={classes.header}>
+        <div className={classes.flexed}>
+          <Hidden mdUp>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              onClick={toggleDrawer}
+            >
+              <Menu />
+            </Button>
+          </Hidden>
+
+          <Typography variant="h6" className={classes.heading}>
+            {currentConvo && recipient()}
+          </Typography>
+        </div>
+        <Button className={classes.moreButton}>
+          <MoreHoriz />
+        </Button>
+      </Paper>
+      <Grid className={classes.main} ref={messagesRef}>
         {isLoading ? (
           <CircularProgress className={classes.centered} />
         ) : (
@@ -116,7 +179,7 @@ export default function MessengerMain(props) {
             <Message key={m._id || m.dateCreated + m.author._id} message={m} />
           ))
         )}
-      </div>
+      </Grid>
       <MessengerForm handleNewMessage={handleNewMessage} />
     </>
   );

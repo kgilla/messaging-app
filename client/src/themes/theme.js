@@ -57,7 +57,7 @@ export const theme = createMuiTheme({
   },
 
   subHeading: {
-    margin: "16px 0",
+    margin: "8px 0",
     color: "#666",
     fontSize: "16px",
     fontWeight: 600,

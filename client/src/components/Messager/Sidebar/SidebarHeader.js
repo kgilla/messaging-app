@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Typography,
-  Paper,
+  Grid,
   Button,
   Menu,
   MenuItem,
@@ -14,39 +14,14 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
     margin: "4px 0",
-    padding: "32px 16px",
-    border: "none",
-    background: "none",
+    padding: "16px",
   },
 
-  main: {
-    display: "flex",
-    alignItems: "center",
-  },
-
-  circle: {
-    height: "50px",
-    width: "50px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: "16px",
-    borderRadius: "50%",
-    background: "#ccc",
-  },
+  circle: theme.circleImage,
 
   username: {
     fontSize: "16px",
-    fontWeight: 600,
-  },
-
-  userState: {
-    fontSize: "14px",
     fontWeight: 600,
   },
 
@@ -76,30 +51,40 @@ export default function SidebarHeader() {
   };
 
   return (
-    <Paper className={classes.root} elevation={1} variant="outlined">
-      <div className={classes.main}>
-        <img src={image3} className={classes.circle} />
+    <Grid
+      className={classes.root}
+      container
+      alignItems="center"
+      justifyContent="space-between"
+    >
+      <Grid item xs={10}>
+        <Grid container alignItems="center">
+          <img src={image3} className={classes.circle} />
 
-        <Typography variant="h6" className={classes.username}>
-          {auth.user.username}
-        </Typography>
-      </div>
-      <Button
-        aria-controls="simple-menu"
-        aria-haspopup="true"
-        onClick={handleClick}
-        className={classes.moreButton}
-      >
-        <MoreHorizIcon />
-      </Button>
-      <Menu
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
-      </Menu>
-    </Paper>
+          <Typography variant="h6" className={classes.username}>
+            {auth.user.username}
+          </Typography>
+        </Grid>
+      </Grid>
+      <Grid item xs={2}>
+        {" "}
+        <Button
+          aria-controls="simple-menu"
+          aria-haspopup="true"
+          onClick={handleClick}
+          className={classes.moreButton}
+        >
+          <MoreHorizIcon />
+        </Button>
+        <Menu
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        </Menu>
+      </Grid>
+    </Grid>
   );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core";
+import { Grid, makeStyles } from "@material-ui/core";
 import { useAuth } from "hooks/useAuth";
 import moment from "moment";
 import { image1 } from "images/conversationImages";
@@ -8,7 +8,6 @@ import clsx from "clsx";
 const useStyles = makeStyles((theme) => ({
   leftMessage: {
     alignSelf: "flex-start",
-    display: "flex",
   },
 
   rightMessage: {
@@ -60,13 +59,11 @@ export default function Message({ message }) {
   const auth = useAuth();
 
   const check = () => {
-    return (
-      auth.user._id === message.author || auth.user._id === message.author._id
-    );
+    return auth.user._id === message.author._id;
   };
 
   return (
-    <div className={check() ? classes.rightMessage : classes.leftMessage}>
+    <Grid className={check() ? classes.rightMessage : classes.leftMessage}>
       {!check() && (
         <img
           src={image1}
@@ -92,6 +89,6 @@ export default function Message({ message }) {
           {message.content}
         </main>
       </div>
-    </div>
+    </Grid>
   );
 }
