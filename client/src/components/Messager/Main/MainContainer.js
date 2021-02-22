@@ -66,7 +66,7 @@ export default function MainContainer(props) {
   const { toggleDrawer, currentConvo, updateConversation, createSnack } = props;
 
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [page, SetPage] = useState(0);
 
   const auth = useAuth();
@@ -95,7 +95,7 @@ export default function MainContainer(props) {
   }, [currentConvo, page]);
 
   const handleNewMessage = async (content) => {
-    makeFakeMessage(content);
+    makeDummyMessage(content);
     try {
       const response = await fetch(
         `/api/convos/${currentConvo._id}/messages/`,
@@ -119,24 +119,19 @@ export default function MainContainer(props) {
     }
   };
 
-  const makeFakeMessage = (content) => {
+  const makeDummyMessage = (content) => {
     const message = {
       dateCreated: Date.now(),
       conversation: currentConvo,
       author: auth.user,
       content,
     };
-    messages ? setMessages([...messages, message]) : setMessages([message]);
+    messages
+      ? setMessages((currentMessages) => [...currentMessages, message])
+      : setMessages([message]);
     updateConversation(message);
     scrollIntoView();
     return message;
-  };
-
-  const recipient = () => {
-    const user = currentConvo.users.filter(
-      (user) => user._id !== auth.user._id
-    );
-    return user[0].username;
   };
 
   const scrollIntoView = () => {
@@ -159,13 +154,14 @@ export default function MainContainer(props) {
           </Hidden>
 
           <Typography variant="h6" className={classes.heading}>
-            {currentConvo && recipient()}
+            {currentConvo && currentConvo.users[0].username}
           </Typography>
         </div>
         <Button className={classes.moreButton}>
           <MoreHoriz />
         </Button>
       </Paper>
+
       <Grid className={classes.main} ref={messagesRef}>
         {isLoading ? (
           <CircularProgress className={classes.centered} />
@@ -176,6 +172,7 @@ export default function MainContainer(props) {
           ))
         )}
       </Grid>
+
       <MessengerForm handleNewMessage={handleNewMessage} />
     </>
   );

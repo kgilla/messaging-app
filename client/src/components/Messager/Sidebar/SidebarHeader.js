@@ -14,6 +14,7 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    height: "15vh",
     margin: "4px 0",
     padding: "16px",
   },
@@ -55,7 +56,7 @@ export default function SidebarHeader() {
       className={classes.root}
       container
       alignItems="center"
-      justifyContent="space-between"
+      justify="space-between"
     >
       <Grid item xs={10}>
         <Grid container alignItems="center">

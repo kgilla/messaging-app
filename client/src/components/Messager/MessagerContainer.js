@@ -27,6 +27,7 @@ export default function MessagerContainer() {
   const classes = useStyles();
   const auth = useAuth();
 
+  // Fetches relevant authed user data to display for all components
   useEffect(() => {
     const getData = async () => {
       try {
@@ -35,7 +36,7 @@ export default function MessagerContainer() {
         });
         if (response.ok) {
           let conversations = await response.json();
-          conversations = conversations.map((c) => assignRandomImage(c));
+          conversations = conversations.map((c) => changeConversation(c));
           setAllConvos(conversations);
           setCurrentConvo(conversations[0]);
           setSnack({
@@ -69,7 +70,7 @@ export default function MessagerContainer() {
         const data = await response.json();
         let conversation = {
           ...data.conversation,
-          users: [auth.user, recipient],
+          users: [recipient],
           image: Math.floor(Math.random() * 7),
         };
         setAllConvos((oldConvos) => [...oldConvos, conversation]);
@@ -89,11 +90,14 @@ export default function MessagerContainer() {
     }
   };
 
-  const assignRandomImage = (conversation) => {
-    return {
+  // Assigns a random image to all users for demo purposes
+  const changeConversation = (conversation) => {
+    let convo = {
       ...conversation,
+      users: conversation.users.filter((u) => u._id !== auth.user._id),
       image: Math.floor(Math.random() * 7),
     };
+    return convo;
   };
 
   // Updates conversation lastMessage
@@ -104,7 +108,7 @@ export default function MessagerContainer() {
     setAllConvos(newConvos);
   };
 
-  // handles sidebar clicking to populate messenger main
+  // handles sidebar conversation clicking to populate Main Container
   const handleConvoChange = (newConvo) => {
     setCurrentConvo(newConvo);
     isSideOpen && toggleDrawer();
@@ -112,9 +116,10 @@ export default function MessagerContainer() {
 
   // handles clicks for sidebar drawer when page width is small enough to show
   const toggleDrawer = () => {
-    setIsSideOpen((oldState) => (oldState ? false : true));
+    setIsSideOpen((oldState) => !oldState);
   };
 
+  // Creates a Snack component for errors or success messages
   const createSnack = (data) => {
     const { message, severity } = data;
     setSnack({ message, severity });
@@ -136,12 +141,12 @@ export default function MessagerContainer() {
             allConvos={allConvos}
             currentConvo={currentConvo}
             changeConvo={handleConvoChange}
-            toggleDrawer={toggleDrawer}
             createConversation={createConversation}
             createSnack={createSnack}
           />
         </Drawer>
       </Hidden>
+
       {/* Regular sized screen sidebar */}
       <Hidden smDown>
         <Grid item md={4}>
@@ -149,12 +154,12 @@ export default function MessagerContainer() {
             allConvos={allConvos}
             currentConvo={currentConvo}
             changeConvo={handleConvoChange}
-            toggleDrawer={toggleDrawer}
             createConversation={createConversation}
             createSnack={createSnack}
           />
         </Grid>
       </Hidden>
+
       <Grid item xs={12} md={8}>
         <MainContainer
           currentConvo={currentConvo}
@@ -163,6 +168,7 @@ export default function MessagerContainer() {
           createSnack={createSnack}
         />
       </Grid>
+
       {snack && <Snack snack={snack} />}
     </Grid>
   );

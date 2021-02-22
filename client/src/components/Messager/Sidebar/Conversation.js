@@ -1,6 +1,5 @@
 import React from "react";
 import { Typography, Paper, makeStyles } from "@material-ui/core";
-import { useAuth } from "hooks/useAuth";
 import {
   image1,
   image2,
@@ -49,12 +48,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Conversation({ convo, changeConvo, currentConvo }) {
   const classes = useStyles();
-  const auth = useAuth();
-
-  const recipient = () => {
-    const user = convo.users.filter((user) => user._id !== auth.user._id);
-    return user[0].username;
-  };
 
   const stringTrimmer = (string) => {
     if (!string) return;
@@ -83,7 +76,7 @@ export default function Conversation({ convo, changeConvo, currentConvo }) {
       />
       <div className={classes.main}>
         <Typography variant="h6" className={classes.username}>
-          {recipient()}
+          {convo.users[0].username}
         </Typography>
         <Typography variant="h6" className={classes.lastMessage}>
           {stringTrimmer(convo.latestMessage?.content)}

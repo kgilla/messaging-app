@@ -8,6 +8,8 @@ import {
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 
+import { useAuth } from "hooks/useAuth";
+
 import Conversation from "./Conversation";
 import SidebarHeader from "./SidebarHeader";
 import SearchResult from "./SearchResult";
@@ -69,6 +71,7 @@ export default function SidebarContainer(props) {
 
   const classes = useStyles();
   const mainRef = useRef();
+  const auth = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -110,7 +113,8 @@ export default function SidebarContainer(props) {
   const filterSearchResults = (searchResults) => {
     const users = allConvos.reduce((a, b) => a.concat(b.users), []);
     return searchResults.filter(
-      (user) => !users.some((u) => u._id === user._id)
+      (user) =>
+        !users.some((u) => u._id === user._id) && user._id !== auth.user._id
     );
   };
 
@@ -126,7 +130,7 @@ export default function SidebarContainer(props) {
       </Grid>
 
       <Grid container className={classes.sidebarMain}>
-        //Search Form
+        {/* Search Form */}
         <form onSubmit={handleSubmit} className={classes.searchContainer}>
           <Typography variant="h6" className={classes.subHeading}>
             Chats
@@ -147,8 +151,9 @@ export default function SidebarContainer(props) {
             }}
           />
         </form>
+
         <Grid item className={classes.main} ref={mainRef}>
-          // Scrolling list of conversations and search Results
+          {/* Scrolling list of conversations and search Results */}
           {searchResults && (
             <>
               <Typography variant="h6" className={classes.subHeading}>
@@ -171,6 +176,8 @@ export default function SidebarContainer(props) {
               )}
             </>
           )}
+
+          {/* All conversations a user is a part of */}
           <Typography variant="h6" className={classes.subHeading}>
             Your Conversations ({allConvos?.length || 0})
           </Typography>
