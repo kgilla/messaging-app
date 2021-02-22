@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, makeStyles } from "@material-ui/core";
+import { Grid, Avatar, makeStyles } from "@material-ui/core";
 import { useAuth } from "hooks/useAuth";
 import moment from "moment";
 import { image1 } from "images/conversationImages";
@@ -66,7 +66,7 @@ export default function Message({ message }) {
   return (
     <Grid item className={check() ? classes.rightMessage : classes.leftMessage}>
       {!check() && (
-        <img
+        <Avatar
           src={image1}
           alt={message.author.username}
           className={classes.smallCircle}

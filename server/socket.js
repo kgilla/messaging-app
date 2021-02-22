@@ -1,5 +1,4 @@
 const io = require("socket.io")();
-const jwt = require("jsonwebtoken");
 
 io.use((socket, next) => {
   const user = socket.handshake.auth.user;
@@ -24,7 +23,14 @@ io.on("connection", (socket) => {
   socket.on("message", ({ to, author, content }) => {
     const recipient = to.users.filter((u) => u._id !== author._id);
     console.log({ recipient, content });
-    socket.to(recipient[0]._id).emit("newMessage", { to, author, content });
+    socket
+      .to(recipient[0]._id)
+      .emit("newMessage", {
+        conversation: to,
+        author,
+        content,
+        dateCreated: Date.now(),
+      });
   });
 
   const users = [];
@@ -36,20 +42,6 @@ io.on("connection", (socket) => {
   }
   socket.emit("users", users);
 
-  // const users = [];
-  // for (let [socket] of io.of("/").sockets) {
-  //   users.push({
-  //     user: socket.user,
-  //   });
-  // }
-  // console.log(users);
-  // socket.emit("users", users);
-  // socket.on("message", ({ to, content }) => {
-  //   console.log(to, content);
-  //   socket.to(to).emit("message", {
-  //     content,
-  //   });
-  // });
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });

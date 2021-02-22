@@ -96,36 +96,9 @@ export default function MainContainer(props) {
     if (currentConvo) getMessages();
   }, [currentConvo, page]);
 
-  useEffect(() => {
-    const updateMessages = (message) => {
-      if (message.to._id === currentConvo._id) {
-        const msg = {
-          author: message.author,
-          conversation: message.to,
-          content: message.content,
-          dateCreated: Date.now(),
-        };
-        setMessages((currentMessages) => [...currentMessages, msg]);
-        scrollIntoView();
-      } else {
-        console.log(false);
-      }
-    };
-
-    const listener = (message) => {
-      updateMessages(message);
-    };
-
-    socket.on("newMessage", listener);
-
-    return () => {
-      socket.off("newMessage", listener);
-    };
-  }, [currentConvo, messagesRef]);
-
   const handleNewMessage = async (content) => {
     socket.emit("message", { to: currentConvo, author: auth.user, content });
-    makeFakeMessage(content);
+    makeDummyMessage(content);
     try {
       const response = await fetch(
         `/api/convos/${currentConvo._id}/messages/`,
@@ -149,11 +122,11 @@ export default function MainContainer(props) {
     }
   };
 
-  const makeFakeMessage = (content) => {
+  const makeDummyMessage = (content, author = auth.user) => {
     const message = {
       dateCreated: Date.now(),
       conversation: currentConvo,
-      author: auth.user,
+      author,
       content,
     };
     messages
@@ -163,16 +136,27 @@ export default function MainContainer(props) {
     scrollIntoView();
   };
 
-  const recipient = () => {
-    const user = currentConvo.users.filter(
-      (user) => user._id !== auth.user._id
-    );
-    return user[0].username;
-  };
-
   const scrollIntoView = () => {
     messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   };
+
+  useEffect(() => {
+    const listener = (message) => {
+      if (message.conversation._id === currentConvo._id) {
+        makeDummyMessage(message.content, message.author);
+      } else {
+        // need to update conversation with new message count and new message content
+        updateConversation(message, message.conversation);
+        console.log("no");
+      }
+    };
+
+    socket.on("newMessage", listener);
+
+    return () => {
+      socket.off("newMessage", listener);
+    };
+  }, [currentConvo, messagesRef, makeDummyMessage, updateConversation]);
 
   return (
     <>
@@ -190,13 +174,14 @@ export default function MainContainer(props) {
           </Hidden>
 
           <Typography variant="h6" className={classes.heading}>
-            {currentConvo && recipient()}
+            {currentConvo && currentConvo.users[0].username}
           </Typography>
         </div>
         <Button className={classes.moreButton}>
           <MoreHoriz />
         </Button>
       </Paper>
+
       <Grid className={classes.main} ref={messagesRef}>
         {isLoading ? (
           <CircularProgress className={classes.centered} />
@@ -207,6 +192,7 @@ export default function MainContainer(props) {
           ))
         )}
       </Grid>
+
       <MessengerForm handleNewMessage={handleNewMessage} />
     </>
   );

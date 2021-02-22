@@ -2,6 +2,7 @@ import React from "react";
 import {
   Typography,
   Grid,
+  Avatar,
   Button,
   Menu,
   MenuItem,
@@ -14,6 +15,7 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    height: "15vh",
     margin: "4px 0",
     padding: "16px",
   },
@@ -59,7 +61,7 @@ export default function SidebarHeader() {
     >
       <Grid item xs={10}>
         <Grid container alignItems="center">
-          <img src={image3} className={classes.circle} />
+          <Avatar src={image3} className={classes.circle} />
 
           <Typography variant="h6" className={classes.username}>
             {auth.user.username}

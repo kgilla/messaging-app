@@ -1,6 +1,12 @@
 import React from "react";
-import { Typography, Paper, makeStyles } from "@material-ui/core";
-import { useAuth } from "hooks/useAuth";
+import {
+  Typography,
+  Paper,
+  Grid,
+  Avatar,
+  Badge,
+  makeStyles,
+} from "@material-ui/core";
 import {
   image1,
   image2,
@@ -13,9 +19,6 @@ import {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
-    display: "flex",
-    alignItems: "center",
     margin: "8px 0",
     padding: "16px",
     border: "none",
@@ -25,6 +28,8 @@ const useStyles = makeStyles((theme) => ({
       background: "#fff",
     },
   },
+
+  grid: {},
 
   selected: {
     boxShadow: "0 2px 4px rgb(0 0 0 / 5%), 0 8px 16px rgb(0 0 0 / 5%)",
@@ -45,16 +50,20 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
   },
+
+  unreadMessage: {
+    color: "#222",
+  },
+
+  badgeBox: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 }));
 
 export default function Conversation({ convo, changeConvo, currentConvo }) {
   const classes = useStyles();
-  const auth = useAuth();
-
-  const recipient = () => {
-    const user = convo.users.filter((user) => user._id !== auth.user._id);
-    return user[0].username;
-  };
 
   const stringTrimmer = (string) => {
     if (!string) return;
@@ -76,19 +85,37 @@ export default function Conversation({ convo, changeConvo, currentConvo }) {
       variant="outlined"
       onClick={() => changeConvo(convo)}
     >
-      <img
-        src={getImage()}
-        alt="message-recipient"
-        className={classes.userImage}
-      />
-      <div className={classes.main}>
-        <Typography variant="h6" className={classes.username}>
-          {recipient()}
-        </Typography>
-        <Typography variant="h6" className={classes.lastMessage}>
-          {stringTrimmer(convo.latestMessage?.content)}
-        </Typography>
-      </div>
+      <Grid container justify="space-between" alignItems="center">
+        <Grid item xs={10}>
+          <Grid container justify="flex-start" alignItems="center">
+            <Avatar
+              src={getImage()}
+              alt="message-recipient"
+              className={classes.userImage}
+            />
+            <div className={classes.main}>
+              <Typography variant="h6" className={classes.username}>
+                {convo.users[0].username}
+              </Typography>
+              <Typography
+                variant="h6"
+                className={
+                  convo.unreadCount
+                    ? ` ${classes.lastMessage} ${classes.unreadMessage}`
+                    : classes.lastMessage
+                }
+              >
+                {stringTrimmer(convo.latestMessage?.content)}
+              </Typography>
+            </div>
+          </Grid>
+        </Grid>
+        <Grid item xs={2} className={classes.badgeBox}>
+          {convo.unreadCount && (
+            <Badge badgeContent={convo.unreadCount} color="primary"></Badge>
+          )}
+        </Grid>
+      </Grid>
     </Paper>
   );
 }
