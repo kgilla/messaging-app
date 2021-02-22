@@ -11,8 +11,8 @@ import {
 import { MoreHoriz, Menu } from "@material-ui/icons";
 
 import { useAuth } from "hooks/useAuth";
-import { useSocket } from "hooks/useSocket";
-import MessengerHeader from "./MessengerHeader";
+import { socket } from "hooks/useSocket";
+
 import MessengerForm from "./MessengerForm";
 import Message from "./Message";
 
@@ -68,11 +68,10 @@ export default function MainContainer(props) {
   const { toggleDrawer, currentConvo, updateConversation, createSnack } = props;
 
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [page, SetPage] = useState(0);
 
   const auth = useAuth();
-  const socket = useSocket();
   const classes = useStyles();
   const messagesRef = useRef();
 
@@ -97,9 +96,36 @@ export default function MainContainer(props) {
     if (currentConvo) getMessages();
   }, [currentConvo, page]);
 
+  useEffect(() => {
+    const updateMessages = (message) => {
+      if (message.to._id === currentConvo._id) {
+        const msg = {
+          author: message.author,
+          conversation: message.to,
+          content: message.content,
+          dateCreated: Date.now(),
+        };
+        setMessages((currentMessages) => [...currentMessages, msg]);
+        scrollIntoView();
+      } else {
+        console.log(false);
+      }
+    };
+
+    const listener = (message) => {
+      updateMessages(message);
+    };
+
+    socket.on("newMessage", listener);
+
+    return () => {
+      socket.off("newMessage", listener);
+    };
+  }, [currentConvo, messagesRef]);
+
   const handleNewMessage = async (content) => {
-    socket.socket.emit("message", content);
-    const message = makeFakeMessage(content);
+    socket.emit("message", { to: currentConvo, author: auth.user, content });
+    makeFakeMessage(content);
     try {
       const response = await fetch(
         `/api/convos/${currentConvo._id}/messages/`,
@@ -130,10 +156,11 @@ export default function MainContainer(props) {
       author: auth.user,
       content,
     };
-    messages ? setMessages([...messages, message]) : setMessages([message]);
+    messages
+      ? setMessages((currentMessages) => [...currentMessages, message])
+      : setMessages([message]);
     updateConversation(message);
     scrollIntoView();
-    return message;
   };
 
   const recipient = () => {

@@ -7,6 +7,7 @@ import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
   leftMessage: {
+    display: "flex",
     alignSelf: "flex-start",
   },
 
@@ -63,7 +64,7 @@ export default function Message({ message }) {
   };
 
   return (
-    <Grid className={check() ? classes.rightMessage : classes.leftMessage}>
+    <Grid item className={check() ? classes.rightMessage : classes.leftMessage}>
       {!check() && (
         <img
           src={image1}

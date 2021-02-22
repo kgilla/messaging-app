@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
 import Loading from "components/Loading";
+import { connectSocket } from "./useSocket";
 
 const authContext = createContext();
 
@@ -28,7 +29,10 @@ function useProvideAuth() {
         });
         if (response.ok) {
           const data = await response.json();
-          if (data.user) setUser(data.user);
+          if (data.user) {
+            connectSocket(data.user);
+            setUser(data.user);
+          }
         }
         setIsLoading(false);
       } catch (err) {
@@ -48,7 +52,10 @@ function useProvideAuth() {
         },
       });
       const data = await response.json();
-      if (data.user) setUser(data.user);
+      if (data.user) {
+        connectSocket(data.user);
+        setUser(data.user);
+      }
       return data;
     } catch (err) {
       console.log(err);
@@ -80,7 +87,10 @@ function useProvideAuth() {
         },
       });
       const data = await response.json();
-      if (response.ok) setUser(data.user);
+      if (response.ok) {
+        connectSocket(data.user);
+        setUser(data.user);
+      }
       return data;
     } catch (err) {
       console.log(err);

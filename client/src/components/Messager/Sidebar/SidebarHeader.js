@@ -55,7 +55,7 @@ export default function SidebarHeader() {
       className={classes.root}
       container
       alignItems="center"
-      justifyContent="space-between"
+      justify="space-between"
     >
       <Grid item xs={10}>
         <Grid container alignItems="center">
