@@ -9,6 +9,7 @@ import {
 import SearchIcon from "@material-ui/icons/Search";
 
 import { useAuth } from "hooks/useAuth";
+import { useMessenger } from "hooks/useMessenger";
 
 import Conversation from "./Conversation";
 import SidebarHeader from "./SidebarHeader";
@@ -57,21 +58,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SidebarContainer(props) {
-  const {
-    allConvos,
-    currentConvo,
-    changeConvo,
-    createConversation,
-    createSnack,
-  } = props;
-
+export default function SidebarContainer() {
   const [input, setInput] = useState("");
   const [searchResults, setSearchResults] = useState(null);
 
   const classes = useStyles();
   const mainRef = useRef();
   const auth = useAuth();
+  const { currentConvo, allConvos } = useMessenger();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -85,10 +79,10 @@ export default function SidebarContainer(props) {
         setSearchResults(filteredData);
         scrollToTop();
       } else {
-        createSnack({
-          message: "Something went wrong on our end",
-          severity: "error",
-        });
+        // createSnack({
+        //   message: "Something went wrong on our end",
+        //   severity: "error",
+        // });
       }
     } catch (err) {}
   };
@@ -160,12 +154,11 @@ export default function SidebarContainer(props) {
                 Search Results ({searchResults?.length})
               </Typography>
               {searchResults.length ? (
-                searchResults.map((result, i) => (
+                searchResults.map((user, i) => (
                   <SearchResult
-                    key={result._id}
-                    user={result}
+                    key={user._id}
+                    user={user}
                     i={i}
-                    createConversation={createConversation}
                     clearSearchResults={clearSearchResults}
                   />
                 ))
@@ -183,12 +176,7 @@ export default function SidebarContainer(props) {
           </Typography>
           {allConvos &&
             filterConvos(input).map((convo) => (
-              <Conversation
-                key={convo._id}
-                convo={convo}
-                changeConvo={changeConvo}
-                currentConvo={currentConvo}
-              />
+              <Conversation key={convo._id} convo={convo} />
             ))}
         </Grid>
       </Grid>

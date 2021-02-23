@@ -17,6 +17,8 @@ import {
   image7,
 } from "images/conversationImages";
 
+import { useMessenger } from "hooks/useMessenger";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: "8px 0",
@@ -60,10 +62,23 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
+
+  onlineStatus: {
+    width: "15px",
+    height: "15px",
+    border: "2px solid #fff",
+    borderRadius: "100%",
+    background: "#aaa",
+  },
+
+  online: {
+    background: theme.palette.online.main,
+  },
 }));
 
-export default function Conversation({ convo, changeConvo, currentConvo }) {
+export default function Conversation({ convo }) {
   const classes = useStyles();
+  const { currentConvo, changeCurrentConvo } = useMessenger();
 
   const stringTrimmer = (string) => {
     if (!string) return;
@@ -83,31 +98,47 @@ export default function Conversation({ convo, changeConvo, currentConvo }) {
           : `${classes.root}`
       }
       variant="outlined"
-      onClick={() => changeConvo(convo)}
+      onClick={() => changeCurrentConvo(convo)}
     >
       <Grid container justify="space-between" alignItems="center">
         <Grid item xs={10}>
-          <Grid container justify="flex-start" alignItems="center">
-            <Avatar
-              src={getImage()}
-              alt="message-recipient"
-              className={classes.userImage}
-            />
-            <div className={classes.main}>
-              <Typography variant="h6" className={classes.username}>
-                {convo.users[0].username}
-              </Typography>
-              <Typography
-                variant="h6"
-                className={
-                  convo.unreadCount
-                    ? ` ${classes.lastMessage} ${classes.unreadMessage}`
-                    : classes.lastMessage
-                }
+          <Grid container justify="flex-start" alignItems="center" spacing={3}>
+            <Grid item xs={3}>
+              {" "}
+              <Badge
+                variant="dot"
+                overlap="circle"
+                classes={{ badge: classes.onlineStatus }}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
               >
-                {stringTrimmer(convo.latestMessage?.content)}
-              </Typography>
-            </div>
+                <Avatar
+                  src={getImage()}
+                  alt="message-recipient"
+                  className={classes.userImage}
+                />
+              </Badge>
+            </Grid>
+            <Grid item xs={9}>
+              {" "}
+              <div className={classes.main}>
+                <Typography variant="h6" className={classes.username}>
+                  {convo.users[0].username}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  className={
+                    convo.unreadCount
+                      ? ` ${classes.lastMessage} ${classes.unreadMessage}`
+                      : classes.lastMessage
+                  }
+                >
+                  {stringTrimmer(convo.latestMessage?.content)}
+                </Typography>
+              </div>
+            </Grid>
           </Grid>
         </Grid>
         <Grid item xs={2} className={classes.badgeBox}>

@@ -60,12 +60,16 @@ export default function SidebarHeader() {
       justify="space-between"
     >
       <Grid item xs={10}>
-        <Grid container alignItems="center">
-          <Avatar src={image3} className={classes.circle} />
-
-          <Typography variant="h6" className={classes.username}>
-            {auth.user.username}
-          </Typography>
+        <Grid container alignItems="center" spacing={3}>
+          <Grid item xs={3}>
+            {" "}
+            <Avatar src={image3} className={classes.circle} />
+          </Grid>
+          <Grid item xs={9}>
+            <Typography variant="h6" className={classes.username}>
+              {auth.user.username}
+            </Typography>
+          </Grid>
         </Grid>
       </Grid>
       <Grid item xs={2}>

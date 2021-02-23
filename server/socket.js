@@ -15,32 +15,36 @@ io.on("connection", (socket) => {
     userID: socket.id,
     username: socket.user,
   });
-});
 
-io.on("connection", (socket) => {
-  console.log("a user connected");
-
-  socket.on("message", ({ to, author, content }) => {
-    const recipient = to.users.filter((u) => u._id !== author._id);
-    console.log({ recipient, content });
-    socket
-      .to(recipient[0]._id)
-      .emit("newMessage", {
-        conversation: to,
-        author,
-        content,
-        dateCreated: Date.now(),
+  socket.on("users", () => {
+    const users = [];
+    for (let [id, socket] of io.of("/").sockets) {
+      users.push({
+        userID: id,
+        user: socket.user,
       });
+    }
+    socket.emit("users", users);
   });
 
-  const users = [];
-  for (let [id, socket] of io.of("/").sockets) {
-    users.push({
-      userID: id,
-      user: socket.user,
+  socket.on("message", ({ conversation, author, content }) => {
+    const recipient = conversation.users.filter((u) => u._id !== author._id);
+    socket.to(recipient[0]._id).emit("newMessage", {
+      conversation,
+      author,
+      content,
+      dateCreated: Date.now(),
     });
-  }
-  socket.emit("users", users);
+  });
+
+  socket.on("conversation", (conversation) => {
+    console.log(conversation);
+    socket.to(conversation.users[0]._id).emit("conversation", conversation);
+  });
+
+  socket.on("userTyping", () => {
+    console.log("User is typing");
+  });
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
