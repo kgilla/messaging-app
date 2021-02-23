@@ -1,11 +1,18 @@
 import React, { useState } from "react";
+
+// Hooks
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
+import { useHistory } from "react-router-dom";
+
+// Validators
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+//Components
 import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import Form from "./Form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 
 const schema = yup.object().shape({
   username: yup.string().required("A username is required"),
@@ -27,12 +34,12 @@ export default function LoginForm() {
 
   const classes = useStyles();
   const auth = useAuth();
+  const history = useHistory();
 
   const onSubmit = async (data) => {
     const response = await auth.login(data);
     if (response.user) {
-      setError(false);
-      // move forward
+      history.push("/messenger");
     } else if (response.error) {
       setError(response.error);
     } else {

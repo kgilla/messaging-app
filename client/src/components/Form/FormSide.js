@@ -1,8 +1,8 @@
 import React from "react";
 import { Grid, Typography, makeStyles } from "@material-ui/core";
 
-import Image from "../../images/bg-img.png";
-import Bubble from "../../images/bubble.svg";
+import Image from "images/bg-img.png";
+import Bubble from "images/bubble.svg";
 
 const useStyles = makeStyles(() => ({
   formImage: {

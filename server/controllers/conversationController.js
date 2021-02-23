@@ -34,3 +34,10 @@ exports.read = async (req, res, next) => {
     return next(err);
   }
 };
+
+exports.test = async (req, res, next) => {
+  const convos = await Conversation.find({
+    users: mongoose.Types.ObjectId(req.user._id),
+  });
+  return res.json(convos);
+};

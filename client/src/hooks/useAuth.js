@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
+import Loading from "components/Loading";
+
 const authContext = createContext();
 
 export function ProvideAuth({ children }) {
   const auth = useProvideAuth();
-  return <authContext.Provider value={auth}>{children}</authContext.Provider>;
+  return auth.isLoading ? (
+    <Loading />
+  ) : (
+    <authContext.Provider value={auth}>{children}</authContext.Provider>
+  );
 }
 
 export const useAuth = () => {
@@ -11,7 +17,26 @@ export const useAuth = () => {
 };
 
 function useProvideAuth() {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const reAuth = async () => {
+      try {
+        const response = await fetch("/api/users/reAuth", {
+          method: "get",
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.user) setUser(data.user);
+        }
+        setIsLoading(false);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    reAuth();
+  }, []);
 
   const login = async (values) => {
     try {
@@ -23,45 +48,48 @@ function useProvideAuth() {
         },
       });
       const data = await response.json();
-      if (data.user) {
-        setUser(data.user);
-      }
+      if (data.user) setUser(data.user);
       return data;
     } catch (err) {
       console.log(err);
     }
   };
 
-  const logout = () => {
-    setUser(null);
+  const logout = async () => {
+    try {
+      setUser(null);
+      const response = await fetch("/api/users/logout", {
+        method: "post",
+      });
+      if (!response.ok) {
+        console.log(response);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const signup = async (values) => {
     try {
       const { username, email, password } = values;
-      const response = await fetch("/api/users/create", {
+      const response = await fetch("/api/users/", {
         method: "post",
         body: JSON.stringify({ username, email, password }),
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (response.ok) {
-        setUser(data.user);
-      }
       const data = await response.json();
+      if (response.ok) setUser(data.user);
       return data;
     } catch (err) {
       console.log(err);
     }
   };
 
-  // useEffect(() => {
-  //  // need to implement auto login if cookie present
-  // }, []);
-
   return {
     user,
+    isLoading,
     signup,
     login,
     logout,

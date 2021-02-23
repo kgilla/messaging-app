@@ -44,6 +44,14 @@ exports.login = (req, res, next) => {
   }
 };
 
+exports.logout = (req, res, next) => {
+  try {
+    return res.status(200).clearCookie("token").send();
+  } catch (err) {
+    return next(err);
+  }
+};
+
 exports.reAuth = async (req, res, next) => {
   return req.user ? res.status(200).json({ user: req.user }) : next();
 };

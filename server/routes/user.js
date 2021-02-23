@@ -13,7 +13,14 @@ router.get(
 );
 
 router.post("/", userValidationRules(), validate, userController.create);
+
 router.post("/login", requireSignin, userController.login);
+
+router.post(
+  "/logout",
+  passport.authenticate("jwt", { session: false }),
+  userController.logout
+);
 
 router.get(
   "/reAuth",
