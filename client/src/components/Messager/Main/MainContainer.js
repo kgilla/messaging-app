@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useLayoutEffect } from "react";
 import {
   Grid,
   Typography,
@@ -9,6 +9,7 @@ import {
 } from "@material-ui/core";
 import { MoreHoriz, Menu } from "@material-ui/icons";
 
+import { socket } from "hooks/useSocket";
 import { useMessenger } from "hooks/useMessenger";
 
 import MessengerForm from "./MessengerForm";
@@ -66,15 +67,15 @@ const useStyles = makeStyles((theme) => ({
 export default function MainContainer({ toggleDrawer }) {
   const classes = useStyles();
   const messagesRef = useRef();
-  const { createMessage, messages, currentConvo } = useMessenger();
+  const { messages, currentConvo, createMessage } = useMessenger();
 
   const scrollIntoView = () => {
     messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     scrollIntoView();
-  }, [messages, scrollIntoView]);
+  });
 
   const handleNewMessage = (content) => {
     createMessage(content);

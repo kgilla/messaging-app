@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SearchResult(props) {
   const classes = useStyles();
-  const { user, i, clearSearchResults } = props;
+  const { user, i, clearSearchResults, toggleDrawer } = props;
   const { createConversation } = useMessenger();
 
   const randomImage = (i) => {
@@ -56,6 +56,7 @@ export default function SearchResult(props) {
   const handleClick = () => {
     createConversation(user);
     clearSearchResults();
+    toggleDrawer();
   };
 
   return (

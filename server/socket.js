@@ -11,10 +11,7 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  socket.broadcast.emit("user connected", {
-    userID: socket.id,
-    username: socket.user,
-  });
+  socket.broadcast.emit("user connected", socket.user);
 
   socket.on("users", () => {
     const users = [];
@@ -28,7 +25,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("message", ({ conversation, author, content }) => {
+    console.log("here");
     const recipient = conversation.users.filter((u) => u._id !== author._id);
+    console.log(recipient[0]);
     socket.to(recipient[0]._id).emit("newMessage", {
       conversation,
       author,
@@ -37,17 +36,12 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("conversation", (conversation) => {
-    console.log(conversation);
-    socket.to(conversation.users[0]._id).emit("conversation", conversation);
-  });
-
-  socket.on("userTyping", () => {
-    console.log("User is typing");
+  socket.on("conversation", (payload) => {
+    socket.to(payload.to._id).emit("conversation", payload.conversation);
   });
 
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    socket.broadcast.emit("user disconnected", socket.user);
   });
 });
 

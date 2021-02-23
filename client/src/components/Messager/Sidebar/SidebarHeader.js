@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import { useAuth } from "hooks/useAuth";
+import { socket } from "hooks/useSocket";
 import { image3 } from "images/conversationImages";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
@@ -50,6 +51,7 @@ export default function SidebarHeader() {
   const handleLogout = () => {
     auth.logout();
     history.push("/");
+    socket.disconnect();
   };
 
   return (

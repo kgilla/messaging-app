@@ -63,20 +63,24 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
 
-  onlineStatus: {
+  online: {
+    width: "15px",
+    height: "15px",
+    border: "2px solid #fff",
+    borderRadius: "100%",
+    background: theme.palette.online.main,
+  },
+
+  offline: {
     width: "15px",
     height: "15px",
     border: "2px solid #fff",
     borderRadius: "100%",
     background: "#aaa",
   },
-
-  online: {
-    background: theme.palette.online.main,
-  },
 }));
 
-export default function Conversation({ convo }) {
+export default function Conversation({ convo, toggleDrawer }) {
   const classes = useStyles();
   const { currentConvo, changeCurrentConvo } = useMessenger();
 
@@ -90,6 +94,11 @@ export default function Conversation({ convo }) {
     return images[convo.image];
   };
 
+  const handleClick = () => {
+    changeCurrentConvo(convo);
+    toggleDrawer();
+  };
+
   return (
     <Paper
       className={
@@ -98,7 +107,7 @@ export default function Conversation({ convo }) {
           : `${classes.root}`
       }
       variant="outlined"
-      onClick={() => changeCurrentConvo(convo)}
+      onClick={handleClick}
     >
       <Grid container justify="space-between" alignItems="center">
         <Grid item xs={10}>
@@ -108,7 +117,9 @@ export default function Conversation({ convo }) {
               <Badge
                 variant="dot"
                 overlap="circle"
-                classes={{ badge: classes.onlineStatus }}
+                classes={{
+                  badge: convo.isOnline ? classes.online : classes.offline,
+                }}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "right",

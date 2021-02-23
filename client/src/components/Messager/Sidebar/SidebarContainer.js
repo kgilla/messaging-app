@@ -58,14 +58,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SidebarContainer() {
+export default function SidebarContainer({ toggleDrawer }) {
   const [input, setInput] = useState("");
   const [searchResults, setSearchResults] = useState(null);
 
   const classes = useStyles();
   const mainRef = useRef();
   const auth = useAuth();
-  const { currentConvo, allConvos } = useMessenger();
+  const { allConvos } = useMessenger();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -160,6 +160,7 @@ export default function SidebarContainer() {
                     user={user}
                     i={i}
                     clearSearchResults={clearSearchResults}
+                    toggleDrawer={toggleDrawer}
                   />
                 ))
               ) : (
@@ -176,7 +177,11 @@ export default function SidebarContainer() {
           </Typography>
           {allConvos &&
             filterConvos(input).map((convo) => (
-              <Conversation key={convo._id} convo={convo} />
+              <Conversation
+                key={convo._id}
+                convo={convo}
+                toggleDrawer={toggleDrawer}
+              />
             ))}
         </Grid>
       </Grid>
