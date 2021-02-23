@@ -2,8 +2,6 @@
 
 A full-stack real time messaging application made using the MERN stack and using Socket.IO.
 
-=======
-
 ## Installing
 
 To install this application locally, we need to create a .env file in the server directory with:
@@ -19,5 +17,3 @@ Once the .env file is created and filled use npm or yarn to install dependencies
   yarn install
   yarn dev
 ```
-
-> > > > > > > crud-routes-controllers
