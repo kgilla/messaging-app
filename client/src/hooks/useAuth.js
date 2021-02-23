@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
 import Loading from "components/Loading";
-import { connectSocket } from "./useSocket";
+import { connectSocket, socket } from "./useSocket";
 
 const authContext = createContext();
 
@@ -64,6 +64,7 @@ function useProvideAuth() {
 
   const logout = async () => {
     try {
+      socket.disconnect();
       setUser(null);
       const response = await fetch("/api/users/logout", {
         method: "post",

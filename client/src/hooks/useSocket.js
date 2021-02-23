@@ -7,8 +7,10 @@ const connectSocket = (user) => {
   socket.connect();
 };
 
-socket.onAny((event, ...args) => {
-  console.log(event, args);
-});
+// Just keeping for development
+
+// socket.onAny((event, ...args) => {
+//   console.log(event, args);
+// });
 
 export { socket, connectSocket };

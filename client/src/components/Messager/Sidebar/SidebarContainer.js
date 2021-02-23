@@ -10,6 +10,7 @@ import SearchIcon from "@material-ui/icons/Search";
 
 import { useAuth } from "hooks/useAuth";
 import { useMessenger } from "hooks/useMessenger";
+import { useSnack } from "hooks/useSnack";
 
 import Conversation from "./Conversation";
 import SidebarHeader from "./SidebarHeader";
@@ -66,6 +67,7 @@ export default function SidebarContainer({ toggleDrawer }) {
   const mainRef = useRef();
   const auth = useAuth();
   const { allConvos } = useMessenger();
+  const { createSnack } = useSnack();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,10 +81,10 @@ export default function SidebarContainer({ toggleDrawer }) {
         setSearchResults(filteredData);
         scrollToTop();
       } else {
-        // createSnack({
-        //   message: "Something went wrong on our end",
-        //   severity: "error",
-        // });
+        createSnack({
+          message: "Something went wrong on our end",
+          severity: "error",
+        });
       }
     } catch (err) {}
   };
@@ -181,6 +183,7 @@ export default function SidebarContainer({ toggleDrawer }) {
                 key={convo._id}
                 convo={convo}
                 toggleDrawer={toggleDrawer}
+                clearResults={clearSearchResults}
               />
             ))}
         </Grid>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
 import { useAuth } from "./useAuth";
 import { socket } from "./useSocket";
+import { useSnack } from "./useSnack";
 
 const messengerContext = createContext();
 
@@ -21,9 +22,9 @@ function useProvideMessenger() {
   const [allConvos, setAllConvos] = useState(null);
   const [messages, setMessages] = useState([]);
   const [currentConvo, setCurrentConvo] = useState(null);
-  const [snack, setSnack] = useState(null);
 
   const auth = useAuth();
+  const { createSnack } = useSnack();
 
   // Intialize call for conversations, users, and latest message in each conversation
   useEffect(() => {
@@ -38,12 +39,12 @@ function useProvideMessenger() {
           setAllConvos(conversations);
           setCurrentConvo(conversations[0]);
           socket.emit("users");
-          setSnack({
+          createSnack({
             message: `Welcome back ${auth.user.username}!`,
             severity: "success",
           });
         } else {
-          setSnack({
+          createSnack({
             message: "Something went wrong on our end",
             severity: "error",
           });
@@ -91,15 +92,17 @@ function useProvideMessenger() {
           conversation: {
             ...data.conversation,
             users: [auth.user],
+            image: Math.floor(Math.random() * 7),
           },
           to: recipient,
         });
-        setSnack({
+        socket.emit("users");
+        createSnack({
           message: "Conversation created successfully!",
           severity: "success",
         });
       } else {
-        setSnack({
+        createSnack({
           message: "Something went wrong on our end",
           severity: "error",
         });
@@ -122,12 +125,11 @@ function useProvideMessenger() {
 
   // filters auth user from conversations and adds random picture
   const changeConversationData = (conversation) => {
-    let convo = {
+    return {
       ...conversation,
       users: conversation.users.filter((u) => u._id !== auth.user._id),
       image: Math.floor(Math.random() * 7),
     };
-    return convo;
   };
 
   // Changes current conversation and removes unread messages
@@ -183,7 +185,7 @@ function useProvideMessenger() {
           content,
         });
       } else {
-        setSnack({
+        createSnack({
           message: "Message unable to send",
           severity: "error",
         });
@@ -210,52 +212,54 @@ function useProvideMessenger() {
 
   // socket listeners
   useEffect(() => {
+    // Sorts convos based on online status
+    const sortConvos = (convos) => {
+      return convos.sort((c) => (c.isOnline ? -1 : 1));
+    };
+
+    // maps inital array of connected users
     const setOnlineStatus = (users) => {
-      let convos = allConvos.map((c) =>
+      return allConvos.map((c) =>
         users.some((user) => user._id === c.users[0]._id)
           ? { ...c, isOnline: true }
           : c
       );
-      convos = convos.sort((c) => (c.isOnline ? -1 : 1));
-      setAllConvos(convos);
     };
 
+    // maps single user
+    const mapUserStatus = (user, online) => {
+      return allConvos.map((c) =>
+        c.users[0]._id === user._id ? { ...c, isOnline: online } : c
+      );
+    };
+
+    // Handles new messages based on currentConvo
     socket.on("newMessage", (message) => {
-      if (message.conversation._id === currentConvo._id) {
-        makeTempMessage(message.content, message.author);
-      } else {
-        updateConversation(message, message.conversation);
-      }
+      message.conversation._id === currentConvo._id
+        ? makeTempMessage(message.content, message.author)
+        : updateConversation(message, message.conversation);
     });
 
     socket.on("conversation", (conversation) => {
-      // users is wrong and needs to be reversed
       setAllConvos((currentConvos) => [...currentConvos, conversation]);
+      socket.emit("users");
     });
 
     socket.on("users", (payload) => {
-      console.log(payload);
       let users = payload.map((item) => item.user);
-      setOnlineStatus(users);
+      setAllConvos(sortConvos(setOnlineStatus(users)));
     });
 
     socket.on("user connected", (user) => {
-      let newConvos = allConvos.map((c) =>
-        c.users[0]._id === user._id ? { ...c, isOnline: true } : c
-      );
-      newConvos = newConvos.sort((c) => (c.isOnline ? -1 : 1));
-      setAllConvos(newConvos);
+      setAllConvos(sortConvos(mapUserStatus(user, true)));
     });
 
     socket.on("user disconnected", (user) => {
-      let newConvos = allConvos.map((c) =>
-        c.users[0]._id === user._id ? { ...c, isOnline: false } : c
-      );
-      newConvos = newConvos.sort((c) => (c.isOnline ? -1 : 1));
-      setAllConvos(newConvos);
+      setAllConvos(sortConvos(mapUserStatus(user, false)));
     });
 
     return () => {
+      // Need to find some better way to do this
       socket.off("newMessage");
       socket.off("users");
       socket.off("conversation");

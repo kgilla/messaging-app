@@ -7,6 +7,7 @@ import {
   Badge,
   makeStyles,
 } from "@material-ui/core";
+import clsx from "clsx";
 import {
   image1,
   image2,
@@ -64,23 +65,22 @@ const useStyles = makeStyles((theme) => ({
   },
 
   online: {
-    width: "15px",
-    height: "15px",
-    border: "2px solid #fff",
-    borderRadius: "100%",
     background: theme.palette.online.main,
   },
 
   offline: {
+    background: "#aaa",
+  },
+
+  status: {
     width: "15px",
     height: "15px",
     border: "2px solid #fff",
     borderRadius: "100%",
-    background: "#aaa",
   },
 }));
 
-export default function Conversation({ convo, toggleDrawer }) {
+export default function Conversation({ convo, toggleDrawer, clearResults }) {
   const classes = useStyles();
   const { currentConvo, changeCurrentConvo } = useMessenger();
 
@@ -95,8 +95,9 @@ export default function Conversation({ convo, toggleDrawer }) {
   };
 
   const handleClick = () => {
-    changeCurrentConvo(convo);
     toggleDrawer();
+    clearResults();
+    changeCurrentConvo(convo);
   };
 
   return (
@@ -118,7 +119,10 @@ export default function Conversation({ convo, toggleDrawer }) {
                 variant="dot"
                 overlap="circle"
                 classes={{
-                  badge: convo.isOnline ? classes.online : classes.offline,
+                  badge: clsx(classes.status, {
+                    [classes.online]: convo.isOnline,
+                    [classes.offline]: !convo.isOnline,
+                  }),
                 }}
                 anchorOrigin={{
                   vertical: "bottom",

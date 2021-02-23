@@ -1,15 +1,16 @@
-import React, { useRef, useEffect, useLayoutEffect } from "react";
+import React, { useRef, useLayoutEffect } from "react";
 import {
   Grid,
   Typography,
   Hidden,
+  Badge,
   Paper,
   Button,
   makeStyles,
 } from "@material-ui/core";
 import { MoreHoriz, Menu } from "@material-ui/icons";
+import clsx from "clsx";
 
-import { socket } from "hooks/useSocket";
 import { useMessenger } from "hooks/useMessenger";
 
 import MessengerForm from "./MessengerForm";
@@ -38,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
 
   heading: {
     fontWeight: 600,
+    marginRight: "32px",
   },
 
   moreButton: {
@@ -61,6 +63,29 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     transform: "translate(-50%, -50%)",
     textAlign: "center",
+  },
+
+  online: {
+    background: theme.palette.online.main,
+  },
+
+  offline: {
+    background: "#aaa",
+  },
+
+  status: {
+    width: "15px",
+    height: "15px",
+    border: "2px solid #fff",
+    borderRadius: "100%",
+    margin: "1px 8px",
+  },
+
+  statusText: {
+    fontSize: "14px",
+    fontWeight: 600,
+    color: "#ccc",
+    marginTop: "2px",
   },
 }));
 
@@ -97,9 +122,26 @@ export default function MainContainer({ toggleDrawer }) {
             </Button>
           </Hidden>
 
-          <Typography variant="h6" className={classes.heading}>
-            {currentConvo && currentConvo?.users[0].username}
-          </Typography>
+          {currentConvo && (
+            <>
+              <Typography variant="h6" className={classes.heading}>
+                {currentConvo?.users[0].username}
+              </Typography>
+              <Badge
+                variant="dot"
+                overlap="circle"
+                classes={{
+                  badge: clsx(classes.status, {
+                    [classes.online]: currentConvo.isOnline,
+                    [classes.offline]: !currentConvo.isOnline,
+                  }),
+                }}
+              ></Badge>
+              <Typography variant="h6" className={classes.statusText}>
+                {currentConvo?.isOnline ? "Online" : "Offline"}
+              </Typography>
+            </>
+          )}
         </div>
         <Button className={classes.moreButton}>
           <MoreHoriz />

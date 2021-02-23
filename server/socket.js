@@ -24,14 +24,12 @@ io.on("connection", (socket) => {
     socket.emit("users", users);
   });
 
-  socket.on("message", ({ conversation, author, content }) => {
-    console.log("here");
-    const recipient = conversation.users.filter((u) => u._id !== author._id);
-    console.log(recipient[0]);
+  socket.on("message", (message) => {
+    const recipient = message.conversation.users.filter(
+      (u) => u._id !== message.author._id
+    );
     socket.to(recipient[0]._id).emit("newMessage", {
-      conversation,
-      author,
-      content,
+      ...message,
       dateCreated: Date.now(),
     });
   });

@@ -3,6 +3,7 @@ import {
   Typography,
   Grid,
   Avatar,
+  Badge,
   Button,
   Menu,
   MenuItem,
@@ -10,7 +11,6 @@ import {
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import { useAuth } from "hooks/useAuth";
-import { socket } from "hooks/useSocket";
 import { image3 } from "images/conversationImages";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
@@ -30,6 +30,14 @@ const useStyles = makeStyles((theme) => ({
 
   moreButton: {
     color: "#bbb",
+  },
+
+  status: {
+    width: "15px",
+    height: "15px",
+    border: "2px solid #fff",
+    borderRadius: "100%",
+    background: theme.palette.online.main,
   },
 }));
 
@@ -51,7 +59,6 @@ export default function SidebarHeader() {
   const handleLogout = () => {
     auth.logout();
     history.push("/");
-    socket.disconnect();
   };
 
   return (
@@ -65,7 +72,19 @@ export default function SidebarHeader() {
         <Grid container alignItems="center" spacing={3}>
           <Grid item xs={3}>
             {" "}
-            <Avatar src={image3} className={classes.circle} />
+            <Badge
+              variant="dot"
+              overlap="circle"
+              classes={{
+                badge: classes.status,
+              }}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+            >
+              <Avatar src={image3} className={classes.circle} />
+            </Badge>
           </Grid>
           <Grid item xs={9}>
             <Typography variant="h6" className={classes.username}>

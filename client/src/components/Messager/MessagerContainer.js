@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Grid, Hidden, Drawer, makeStyles } from "@material-ui/core";
 
-import { useMessenger } from "hooks/useMessenger";
+import { useSnack } from "hooks/useSnack";
 
+import Snack from "./Snack";
 import SidebarContainer from "./Sidebar/SidebarContainer";
 import MainContainer from "./Main/MainContainer";
-import Snack from "./Snack";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -23,7 +23,7 @@ export default function MessagerContainer() {
   const [isSideOpen, setIsSideOpen] = useState(false);
 
   const classes = useStyles();
-  const messenger = useMessenger();
+  const { snack } = useSnack();
 
   // handles clicks for sidebar drawer when page width is small enough to show
   const toggleDrawer = () => {
@@ -57,7 +57,7 @@ export default function MessagerContainer() {
         <MainContainer toggleDrawer={toggleDrawer} />
       </Grid>
 
-      {/* {snack && <Snack snack={snack} />} */}
+      {snack && <Snack snack={snack} />}
     </Grid>
   );
 }
