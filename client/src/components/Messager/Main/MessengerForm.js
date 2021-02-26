@@ -4,6 +4,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { TextField, InputAdornment, makeStyles } from "@material-ui/core";
 import { Mood, FileCopy } from "@material-ui/icons";
+import { useMessenger } from "hooks/useMessenger";
 
 const schema = yup.object().shape({
   content: yup.string().required("A message cannot be blank"),
@@ -30,8 +31,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MessengerForm({ handleNewMessage }) {
+export default function MessengerForm() {
   const classes = useStyles();
+  const { createMessage } = useMessenger();
 
   const { register, handleSubmit, errors, reset } = useForm({
     resolver: yupResolver(schema),
@@ -39,7 +41,7 @@ export default function MessengerForm({ handleNewMessage }) {
 
   const onSubmit = (data) => {
     const { content } = data;
-    handleNewMessage(content);
+    createMessage(content);
     reset();
   };
 

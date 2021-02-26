@@ -100,9 +100,9 @@ export default function SidebarContainer({ toggleDrawer }) {
 
   const filterConvos = (input) => {
     return allConvos.filter((c) =>
-      c.users.some((user) =>
-        user.username.toLowerCase().includes(input.toLowerCase())
-      )
+      c.users.some((user) => {
+        return user?.username?.toLowerCase().includes(input.toLowerCase());
+      })
     );
   };
 

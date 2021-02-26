@@ -22,7 +22,8 @@ const convoQuery = (userID) => {
             },
           },
           { $sort: { _id: -1 } },
-          { $limit: 1 },
+          { $limit: 50 },
+          { $sort: { _id: 1 } },
           {
             $lookup: {
               from: "users",
@@ -39,10 +40,10 @@ const convoQuery = (userID) => {
           },
           { $unwind: "$author" },
         ],
-        as: "latestMessage",
+        as: "messages",
       },
     },
-    { $unwind: { path: "$latestMessage", preserveNullAndEmptyArrays: true } },
+    // { $unwind: { path: "$messages", preserveNullAndEmptyArrays: true } },
   ];
 };
 

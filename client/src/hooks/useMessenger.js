@@ -19,8 +19,7 @@ export const useMessenger = () => {
 };
 
 function useProvideMessenger() {
-  const [allConvos, setAllConvos] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const [allConvos, setAllConvos] = useState([]);
   const [currentConvo, setCurrentConvo] = useState(null);
 
   const auth = useAuth();
@@ -57,23 +56,23 @@ function useProvideMessenger() {
   }, [auth.user]);
 
   // Message fetch call
-  useEffect(() => {
-    const getMessages = async (page = 0) => {
-      try {
-        const response = await fetch(
-          `/api/convos/${currentConvo._id}/messages/?page=${page}&size=50`,
-          { method: "get" }
-        );
-        const data = await response.json();
-        messages
-          ? setMessages(data.messages, ...messages)
-          : setMessages(data.messages);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    currentConvo && getMessages();
-  }, [currentConvo]);
+  // useEffect(() => {
+  //   const getMessages = async (page = 0) => {
+  //     try {
+  //       const response = await fetch(
+  //         `/api/convos/${currentConvo._id}/messages/?page=${page}&size=50`,
+  //         { method: "get" }
+  //       );
+  //       const data = await response.json();
+  //       messages
+  //         ? setMessages(data.messages, ...messages)
+  //         : setMessages(data.messages);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   currentConvo && getMessages();
+  // }, [currentConvo]);
 
   // Conversation functions
   const createConversation = async (recipient) => {
@@ -92,6 +91,7 @@ function useProvideMessenger() {
           conversation: {
             ...data.conversation,
             users: [auth.user],
+            unreadCount: 0,
             image: Math.floor(Math.random() * 7),
           },
           to: recipient,
@@ -117,6 +117,7 @@ function useProvideMessenger() {
     let conversation = {
       ...data.conversation,
       users: [recipient],
+      messages: [],
       image: Math.floor(Math.random() * 7),
     };
     setAllConvos((oldConvos) => [...oldConvos, conversation]);
@@ -129,39 +130,48 @@ function useProvideMessenger() {
       ...conversation,
       users: conversation.users.filter((u) => u._id !== auth.user._id),
       image: Math.floor(Math.random() * 7),
+      unreadCount: 0,
     };
   };
 
   // Changes current conversation and removes unread messages
   const changeCurrentConvo = (newConvo) => {
     if (newConvo.unreadCount) {
-      const newConvos = allConvos.map((c) =>
-        c._id === newConvo._id ? { ...newConvo, unreadCount: null } : c
+      setAllConvos((currentConvos) =>
+        currentConvos.map((c) =>
+          c._id === newConvo._id ? { ...newConvo, unreadCount: 0 } : c
+        )
       );
-      setAllConvos(newConvos);
     }
     setCurrentConvo(newConvo);
   };
 
   // updates conversations latestMessage and handles unreadCount
-  const updateConversation = (newMessage, conversation = currentConvo) => {
-    let newConvos;
-    if (conversation === currentConvo) {
-      newConvos = allConvos.map((c) =>
-        c._id === conversation._id ? { ...c, latestMessage: newMessage } : c
-      );
-    } else {
-      newConvos = allConvos.map((c) =>
-        c._id === conversation._id
+  const updateConversation = (message) => {
+    setAllConvos((currentConvos) =>
+      currentConvos.map((c) =>
+        c._id === message.conversation._id
           ? {
               ...c,
-              latestMessage: newMessage,
-              unreadCount: c.unreadCount ? (c.unreadCount += 1) : 1,
+              messages: c.messages.push(message),
+              unreadCount:
+                message.conversation._id !== currentConvo._id
+                  ? (c.unreadCount += 1)
+                  : c.unreadCount,
             }
           : c
+      )
+    );
+    updateCurrentConvo();
+  };
+
+  const updateCurrentConvo = () => {
+    setAllConvos((currentConvos) => {
+      setCurrentConvo((currentConvo) =>
+        currentConvos.find((c) => c._id === currentConvo._id)
       );
-    }
-    setAllConvos(newConvos);
+      return currentConvos;
+    });
   };
 
   // Message Functions
@@ -178,12 +188,13 @@ function useProvideMessenger() {
           },
         }
       );
+      console.log(response);
       if (response.ok) {
-        socket.emit("message", {
-          conversation: currentConvo,
-          author: auth.user,
-          content,
-        });
+        // socket.emit("message", {
+        //   conversation: currentConvo,
+        //   author: auth.user,
+        //   content,
+        // });
       } else {
         createSnack({
           message: "Message unable to send",
@@ -204,41 +215,57 @@ function useProvideMessenger() {
       author,
       content,
     };
-    messages
-      ? setMessages((currentMessages) => [...currentMessages, message])
-      : setMessages([message]);
     updateConversation(message);
   };
 
+  // Sorts convos based on online status
+  const sortConvos = (convos) => {
+    return convos.sort((c) => (c.isOnline ? -1 : 1));
+  };
+
+  // maps inital array of connected users
+  const setOnlineStatus = (users) => {
+    setAllConvos((currentConvos) => {
+      return sortConvos(
+        currentConvos.map((c) =>
+          users.some((user) => user._id === c.users[0]._id)
+            ? { ...c, isOnline: true }
+            : c
+        )
+      );
+    });
+    updateCurrentConvo();
+  };
+
+  // maps single user
+  const mapUserStatus = (user, online) => {
+    setAllConvos((currentConvos) => {
+      return sortConvos(
+        currentConvos.map((c) =>
+          c.users[0]._id === user._id ? { ...c, isOnline: online } : c
+        )
+      );
+    });
+    updateCurrentConvo();
+  };
+
+  // useEffect(() => {
+  //   console.log("using effect");
+  //   // Handles new messages based on currentConvo
+  //   socket.on("newMessage", (message) => {
+  //     updateConversation(message);
+  //   });
+
+  //   return () => {
+  //     socket.off("newMessage");
+  //   };
+  // }, [currentConvo]);
+
   // socket listeners
   useEffect(() => {
-    // Sorts convos based on online status
-    const sortConvos = (convos) => {
-      return convos.sort((c) => (c.isOnline ? -1 : 1));
-    };
-
-    // maps inital array of connected users
-    const setOnlineStatus = (users) => {
-      return allConvos.map((c) =>
-        users.some((user) => user._id === c.users[0]._id)
-          ? { ...c, isOnline: true }
-          : c
-      );
-    };
-
-    // maps single user
-    const mapUserStatus = (user, online) => {
-      return allConvos.map((c) =>
-        c.users[0]._id === user._id ? { ...c, isOnline: online } : c
-      );
-    };
-
-    // Handles new messages based on currentConvo
-    socket.on("newMessage", (message) => {
-      message.conversation._id === currentConvo._id
-        ? makeTempMessage(message.content, message.author)
-        : updateConversation(message, message.conversation);
-    });
+    // socket.on("newMessage", (message) => {
+    //   updateConversation(message);
+    // });
 
     socket.on("conversation", (conversation) => {
       setAllConvos((currentConvos) => [...currentConvos, conversation]);
@@ -247,35 +274,32 @@ function useProvideMessenger() {
 
     socket.on("users", (payload) => {
       let users = payload.map((item) => item.user);
-      setAllConvos(sortConvos(setOnlineStatus(users)));
+      setOnlineStatus(users);
     });
 
     socket.on("user connected", (user) => {
-      setAllConvos(sortConvos(mapUserStatus(user, true)));
+      mapUserStatus(user, true);
     });
 
     socket.on("user disconnected", (user) => {
-      setAllConvos(sortConvos(mapUserStatus(user, false)));
+      mapUserStatus(user, false);
     });
 
     return () => {
-      // Need to find some better way to do this
-      socket.off("newMessage");
+      // socket.off("newMessage");
       socket.off("users");
       socket.off("conversation");
       socket.off("user connected");
       socket.off("user disconnected");
     };
-  }, [allConvos, currentConvo]);
+  }, []);
 
   return {
     allConvos,
-    messages,
     currentConvo,
     createMessage,
     createConversation,
     changeCurrentConvo,
     updateConversation,
-    makeTempMessage,
   };
 }

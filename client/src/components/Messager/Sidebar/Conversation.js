@@ -50,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#666",
     fontSize: "14px",
     fontWeight: 600,
+    overflow: "hidden",
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
   },
@@ -84,11 +85,6 @@ export default function Conversation({ convo, toggleDrawer, clearResults }) {
   const classes = useStyles();
   const { currentConvo, changeCurrentConvo } = useMessenger();
 
-  const stringTrimmer = (string) => {
-    if (!string) return;
-    return string.length > 25 ? string.slice(0, 25) + "..." : string;
-  };
-
   const getImage = () => {
     const images = [image1, image2, image3, image4, image5, image6, image7];
     return images[convo.image];
@@ -112,7 +108,7 @@ export default function Conversation({ convo, toggleDrawer, clearResults }) {
     >
       <Grid container justify="space-between" alignItems="center">
         <Grid item xs={10}>
-          <Grid container justify="flex-start" alignItems="center" spacing={3}>
+          <Grid container justify="flex-start" alignItems="center">
             <Grid item xs={3}>
               {" "}
               <Badge
@@ -150,16 +146,16 @@ export default function Conversation({ convo, toggleDrawer, clearResults }) {
                       : classes.lastMessage
                   }
                 >
-                  {stringTrimmer(convo.latestMessage?.content)}
+                  {convo.messages?.length
+                    ? convo.messages[convo.messages.length - 1].content
+                    : ""}
                 </Typography>
               </div>
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={2} className={classes.badgeBox}>
-          {convo.unreadCount && (
-            <Badge badgeContent={convo.unreadCount} color="primary"></Badge>
-          )}
+          <Badge badgeContent={convo.unreadCount} color="primary"></Badge>
         </Grid>
       </Grid>
     </Paper>

@@ -69,7 +69,7 @@ export default function SidebarHeader() {
       justify="space-between"
     >
       <Grid item xs={10}>
-        <Grid container alignItems="center" spacing={3}>
+        <Grid container alignItems="center">
           <Grid item xs={3}>
             {" "}
             <Badge

@@ -92,7 +92,8 @@ const useStyles = makeStyles((theme) => ({
 export default function MainContainer({ toggleDrawer }) {
   const classes = useStyles();
   const messagesRef = useRef();
-  const { messages, currentConvo, createMessage } = useMessenger();
+
+  const { currentConvo } = useMessenger();
 
   const scrollIntoView = () => {
     messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
@@ -101,11 +102,6 @@ export default function MainContainer({ toggleDrawer }) {
   useLayoutEffect(() => {
     scrollIntoView();
   });
-
-  const handleNewMessage = (content) => {
-    createMessage(content);
-    scrollIntoView();
-  };
 
   return (
     <>
@@ -149,8 +145,8 @@ export default function MainContainer({ toggleDrawer }) {
       </Paper>
 
       <Grid className={classes.main} ref={messagesRef}>
-        {messages ? (
-          messages.map((m) => (
+        {currentConvo?.messages?.length ? (
+          currentConvo.messages.map((m) => (
             <Message key={m._id || m.dateCreated + m.author._id} message={m} />
           ))
         ) : (
@@ -160,7 +156,7 @@ export default function MainContainer({ toggleDrawer }) {
         )}
       </Grid>
 
-      <MessengerForm handleNewMessage={handleNewMessage} />
+      <MessengerForm />
     </>
   );
 }
