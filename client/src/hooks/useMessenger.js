@@ -248,7 +248,6 @@ function useProvideMessenger() {
     });
 
     socket.on("user connected", (user) => {
-      console.log(user + "connected");
       mapUserStatus(user, true);
     });
 
