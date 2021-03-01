@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Conversation({ convo, toggleDrawer, clearResults }) {
   const classes = useStyles();
-  const { currentConvo, changeCurrentConvo } = useMessenger();
+  const { allConvos, currentConvo, changeCurrentConvo } = useMessenger();
 
   const getImage = () => {
     const images = [image1, image2, image3, image4, image5, image6, image7];
@@ -99,7 +99,7 @@ export default function Conversation({ convo, toggleDrawer, clearResults }) {
   return (
     <Paper
       className={
-        currentConvo && currentConvo._id === convo._id
+        allConvos[currentConvo]?._id === convo._id
           ? `${classes.root} ${classes.selected}`
           : `${classes.root}`
       }
@@ -146,9 +146,7 @@ export default function Conversation({ convo, toggleDrawer, clearResults }) {
                       : classes.lastMessage
                   }
                 >
-                  {convo.messages?.length
-                    ? convo.messages[convo.messages.length - 1].content
-                    : ""}
+                  {convo.messages[convo.messages?.length - 1]?.content}
                 </Typography>
               </div>
             </Grid>

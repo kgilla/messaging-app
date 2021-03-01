@@ -43,7 +43,6 @@ const convoQuery = (userID) => {
         as: "messages",
       },
     },
-    // { $unwind: { path: "$messages", preserveNullAndEmptyArrays: true } },
   ];
 };
 

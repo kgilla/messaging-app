@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from "react";
+import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
 import {
   Grid,
   Typography,
@@ -6,6 +6,7 @@ import {
   Badge,
   Paper,
   Button,
+  CircularProgress,
   makeStyles,
 } from "@material-ui/core";
 import { MoreHoriz, Menu } from "@material-ui/icons";
@@ -93,7 +94,7 @@ export default function MainContainer({ toggleDrawer }) {
   const classes = useStyles();
   const messagesRef = useRef();
 
-  const { currentConvo } = useMessenger();
+  const { allConvos, currentConvo } = useMessenger();
 
   const scrollIntoView = () => {
     messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
@@ -102,6 +103,33 @@ export default function MainContainer({ toggleDrawer }) {
   useLayoutEffect(() => {
     scrollIntoView();
   });
+
+  const renderMessages = () => {
+    return !allConvos[currentConvo] ? (
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    ) : allConvos[currentConvo]?.messages ? (
+      allConvos[currentConvo].messages.map((m) => (
+        <Message
+          key={m._id || m.dateCreated + m.author._id}
+          message={m}
+          image={allConvos[currentConvo].image}
+        />
+      ))
+    ) : (
+      <Typography variant="h5" className={classes.centered}>
+        Don't be afraid to make the first move!
+      </Typography>
+    );
+  };
 
   return (
     <>
@@ -117,27 +145,24 @@ export default function MainContainer({ toggleDrawer }) {
               <Menu />
             </Button>
           </Hidden>
-
-          {currentConvo && (
-            <>
-              <Typography variant="h6" className={classes.heading}>
-                {currentConvo?.users[0].username}
-              </Typography>
-              <Badge
-                variant="dot"
-                overlap="circle"
-                classes={{
-                  badge: clsx(classes.status, {
-                    [classes.online]: currentConvo.isOnline,
-                    [classes.offline]: !currentConvo.isOnline,
-                  }),
-                }}
-              ></Badge>
-              <Typography variant="h6" className={classes.statusText}>
-                {currentConvo?.isOnline ? "Online" : "Offline"}
-              </Typography>
-            </>
-          )}
+          <>
+            <Typography variant="h6" className={classes.heading}>
+              {allConvos[currentConvo]?.users[0].username}
+            </Typography>
+            <Badge
+              variant="dot"
+              overlap="circle"
+              classes={{
+                badge: clsx(classes.status, {
+                  [classes.online]: allConvos[currentConvo]?.isOnline,
+                  [classes.offline]: !allConvos[currentConvo]?.isOnline,
+                }),
+              }}
+            ></Badge>
+            <Typography variant="h6" className={classes.statusText}>
+              {allConvos[currentConvo]?.isOnline ? "Online" : "Offline"}
+            </Typography>
+          </>
         </div>
         <Button className={classes.moreButton}>
           <MoreHoriz />
@@ -145,17 +170,8 @@ export default function MainContainer({ toggleDrawer }) {
       </Paper>
 
       <Grid className={classes.main} ref={messagesRef}>
-        {currentConvo?.messages?.length ? (
-          currentConvo.messages.map((m) => (
-            <Message key={m._id || m.dateCreated + m.author._id} message={m} />
-          ))
-        ) : (
-          <Typography variant="h5" className={classes.centered}>
-            Don't be afraid to make the first move!
-          </Typography>
-        )}
+        {renderMessages()}
       </Grid>
-
       <MessengerForm />
     </>
   );

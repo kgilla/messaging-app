@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
 import { useAuth } from "./useAuth";
-import { socket } from "./useSocket";
+import { emitConversation, emitMessage, emitUsers, socket } from "./useSocket";
 import { useSnack } from "./useSnack";
 
 const messengerContext = createContext();
@@ -20,12 +20,14 @@ export const useMessenger = () => {
 
 function useProvideMessenger() {
   const [allConvos, setAllConvos] = useState([]);
-  const [currentConvo, setCurrentConvo] = useState(null);
+  const [currentConvo, setCurrentConvo] = useState(0);
 
   const auth = useAuth();
   const { createSnack } = useSnack();
 
-  // Intialize call for conversations, users, and latest message in each conversation
+  // API CALLS
+
+  // Intialize API call
   useEffect(() => {
     const getData = async () => {
       try {
@@ -36,8 +38,7 @@ function useProvideMessenger() {
           let conversations = await response.json();
           conversations = conversations.map((c) => changeConversationData(c));
           setAllConvos(conversations);
-          setCurrentConvo(conversations[0]);
-          socket.emit("users");
+          emitUsers();
           createSnack({
             message: `Welcome back ${auth.user.username}!`,
             severity: "success",
@@ -55,26 +56,23 @@ function useProvideMessenger() {
     auth.user && getData();
   }, [auth.user]);
 
-  // Message fetch call
-  // useEffect(() => {
-  //   const getMessages = async (page = 0) => {
-  //     try {
-  //       const response = await fetch(
-  //         `/api/convos/${currentConvo._id}/messages/?page=${page}&size=50`,
-  //         { method: "get" }
-  //       );
-  //       const data = await response.json();
-  //       messages
-  //         ? setMessages(data.messages, ...messages)
-  //         : setMessages(data.messages);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   currentConvo && getMessages();
-  // }, [currentConvo]);
+  const getMessages = async (page = 1) => {
+    try {
+      const response = await fetch(
+        `/api/convos/${currentConvo._id}/messages/?page=${page}&size=50`,
+        { method: "get" }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        // add messages to conversation
+      } else {
+        // deal with no more messages to load
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-  // Conversation functions
   const createConversation = async (recipient) => {
     try {
       const response = await fetch("/api/convos", {
@@ -87,16 +85,7 @@ function useProvideMessenger() {
       if (response.ok) {
         const data = await response.json();
         addConvoToState(data, recipient);
-        socket.emit("conversation", {
-          conversation: {
-            ...data.conversation,
-            users: [auth.user],
-            unreadCount: 0,
-            image: Math.floor(Math.random() * 7),
-          },
-          to: recipient,
-        });
-        socket.emit("users");
+        emitConversation(data.conversation, auth.user, recipient);
         createSnack({
           message: "Conversation created successfully!",
           severity: "success",
@@ -112,7 +101,33 @@ function useProvideMessenger() {
     }
   };
 
-  // Adds new conversation to state, sets it as currentConvo, and emits to socket server
+  const createMessage = async (content) => {
+    makeTempMessage(content);
+    try {
+      const response = await fetch(
+        `/api/convos/${allConvos[currentConvo]._id}/messages/`,
+        {
+          method: "post",
+          body: JSON.stringify({ content }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        emitMessage(allConvos[currentConvo], auth.user, content);
+      } else {
+        createSnack({
+          message: "Message unable to send",
+          severity: "error",
+        });
+        // Should add some message flag component or just remove the message from the messages array.
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const addConvoToState = (data, recipient) => {
     let conversation = {
       ...data.conversation,
@@ -120,8 +135,10 @@ function useProvideMessenger() {
       messages: [],
       image: Math.floor(Math.random() * 7),
     };
-    setAllConvos((oldConvos) => [...oldConvos, conversation]);
-    setCurrentConvo(conversation);
+    setAllConvos((oldConvos) =>
+      oldConvos.length ? [...oldConvos, conversation] : [conversation]
+    );
+    setCurrentConvo(0);
   };
 
   // filters auth user from conversations and adds random picture
@@ -136,14 +153,11 @@ function useProvideMessenger() {
 
   // Changes current conversation and removes unread messages
   const changeCurrentConvo = (newConvo) => {
-    if (newConvo.unreadCount) {
-      setAllConvos((currentConvos) =>
-        currentConvos.map((c) =>
-          c._id === newConvo._id ? { ...newConvo, unreadCount: 0 } : c
-        )
-      );
-    }
-    setCurrentConvo(newConvo);
+    const i = allConvos.findIndex((c) => c._id === newConvo._id);
+    let convoCopy = allConvos.slice();
+    convoCopy[i].unreadCount = 0;
+    setCurrentConvo(i);
+    setAllConvos(convoCopy);
   };
 
   // updates conversations latestMessage and handles unreadCount
@@ -153,74 +167,36 @@ function useProvideMessenger() {
         c._id === message.conversation._id
           ? {
               ...c,
-              messages: c.messages.push(message),
+              messages: c.messages.length
+                ? [...c.messages, message]
+                : [message],
               unreadCount:
-                message.conversation._id !== currentConvo._id
+                message.conversation._id !== currentConvos[currentConvo]._id
                   ? (c.unreadCount += 1)
                   : c.unreadCount,
             }
           : c
       )
     );
-    updateCurrentConvo();
-  };
-
-  const updateCurrentConvo = () => {
-    setAllConvos((currentConvos) => {
-      setCurrentConvo((currentConvo) =>
-        currentConvos.find((c) => c._id === currentConvo._id)
-      );
-      return currentConvos;
-    });
-  };
-
-  // Message Functions
-  const createMessage = async (content) => {
-    makeTempMessage(content);
-    try {
-      const response = await fetch(
-        `/api/convos/${currentConvo._id}/messages/`,
-        {
-          method: "post",
-          body: JSON.stringify({ content }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(response);
-      if (response.ok) {
-        // socket.emit("message", {
-        //   conversation: currentConvo,
-        //   author: auth.user,
-        //   content,
-        // });
-      } else {
-        createSnack({
-          message: "Message unable to send",
-          severity: "error",
-        });
-        // Should add some message flag component or just remove the message from the messages array.
-      }
-    } catch (err) {
-      console.log(err);
-    }
   };
 
   // Constructs temp message to add to conversation prior to API call.
   const makeTempMessage = (content, author = auth.user) => {
     const message = {
       dateCreated: Date.now(),
-      conversation: currentConvo,
+      conversation: allConvos[currentConvo],
       author,
       content,
     };
     updateConversation(message);
   };
 
-  // Sorts convos based on online status
+  // Sorts convos based on online status, updates currentConvo to new index
   const sortConvos = (convos) => {
-    return convos.sort((c) => (c.isOnline ? -1 : 1));
+    const oldConvos = convos.slice();
+    const sorted = convos.sort((c) => (c.isOnline ? -1 : 1));
+    setCurrentConvo((i) => sorted.findIndex((c) => c._id === oldConvos[i]._id));
+    return sorted;
   };
 
   // maps inital array of connected users
@@ -234,7 +210,6 @@ function useProvideMessenger() {
         )
       );
     });
-    updateCurrentConvo();
   };
 
   // maps single user
@@ -246,30 +221,25 @@ function useProvideMessenger() {
         )
       );
     });
-    updateCurrentConvo();
   };
 
-  // useEffect(() => {
-  //   console.log("using effect");
-  //   // Handles new messages based on currentConvo
-  //   socket.on("newMessage", (message) => {
-  //     updateConversation(message);
-  //   });
+  // seperate useEffect to keep ref to latest currentConvo
+  useEffect(() => {
+    // Handles new messages based on currentConvo
+    socket.on("newMessage", (message) => {
+      updateConversation(message);
+    });
 
-  //   return () => {
-  //     socket.off("newMessage");
-  //   };
-  // }, [currentConvo]);
+    return () => {
+      socket.off("newMessage");
+    };
+  }, [currentConvo]);
 
   // socket listeners
   useEffect(() => {
-    // socket.on("newMessage", (message) => {
-    //   updateConversation(message);
-    // });
-
     socket.on("conversation", (conversation) => {
       setAllConvos((currentConvos) => [...currentConvos, conversation]);
-      socket.emit("users");
+      emitUsers();
     });
 
     socket.on("users", (payload) => {
@@ -278,6 +248,7 @@ function useProvideMessenger() {
     });
 
     socket.on("user connected", (user) => {
+      console.log(user + "connected");
       mapUserStatus(user, true);
     });
 
@@ -286,7 +257,6 @@ function useProvideMessenger() {
     });
 
     return () => {
-      // socket.off("newMessage");
       socket.off("users");
       socket.off("conversation");
       socket.off("user connected");
@@ -297,9 +267,9 @@ function useProvideMessenger() {
   return {
     allConvos,
     currentConvo,
+    getMessages,
     createMessage,
     createConversation,
     changeCurrentConvo,
-    updateConversation,
   };
 }

@@ -2,7 +2,15 @@ import React from "react";
 import { Grid, Avatar, makeStyles } from "@material-ui/core";
 import { useAuth } from "hooks/useAuth";
 import moment from "moment";
-import { image1 } from "images/conversationImages";
+import {
+  image1,
+  image2,
+  image3,
+  image4,
+  image5,
+  image6,
+  image7,
+} from "images/conversationImages";
 import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
@@ -55,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Message({ message }) {
+export default function Message({ message, image }) {
   const classes = useStyles();
   const auth = useAuth();
 
@@ -63,11 +71,16 @@ export default function Message({ message }) {
     return auth.user._id === message.author._id;
   };
 
+  const getImage = () => {
+    const images = [image1, image2, image3, image4, image5, image6, image7];
+    return images[image];
+  };
+
   return (
     <Grid item className={check() ? classes.rightMessage : classes.leftMessage}>
       {!check() && (
         <Avatar
-          src={image1}
+          src={getImage()}
           alt={message.author.username}
           className={classes.smallCircle}
         />
