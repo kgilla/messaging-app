@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
 import {
   Grid,
-  CircularProgress,
   Typography,
   Hidden,
+  Badge,
   Paper,
   Button,
+  CircularProgress,
   makeStyles,
 } from "@material-ui/core";
 import { MoreHoriz, Menu } from "@material-ui/icons";
+import clsx from "clsx";
 
-import { useAuth } from "hooks/useAuth";
+import { useMessenger } from "hooks/useMessenger";
+
 import MessengerForm from "./MessengerForm";
 import Message from "./Message";
 
@@ -37,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 
   heading: {
     fontWeight: 600,
+    marginRight: "32px",
   },
 
   moreButton: {
@@ -59,83 +63,72 @@ const useStyles = makeStyles((theme) => ({
     left: "50%",
     top: "50%",
     transform: "translate(-50%, -50%)",
+    textAlign: "center",
+  },
+
+  online: {
+    background: theme.palette.online.main,
+  },
+
+  offline: {
+    background: "#aaa",
+  },
+
+  status: {
+    width: "15px",
+    height: "15px",
+    border: "2px solid #fff",
+    borderRadius: "100%",
+    margin: "1px 8px",
+  },
+
+  statusText: {
+    fontSize: "14px",
+    fontWeight: 600,
+    color: "#ccc",
+    marginTop: "2px",
   },
 }));
 
-export default function MainContainer(props) {
-  const { toggleDrawer, currentConvo, updateConversation, createSnack } = props;
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [page, SetPage] = useState(0);
-
-  const auth = useAuth();
+export default function MainContainer({ toggleDrawer }) {
   const classes = useStyles();
   const messagesRef = useRef();
 
-  useEffect(() => {
-    const getMessages = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(
-          `/api/convos/${currentConvo._id}/messages/?page=${page}&size=50`,
-          { method: "get" }
-        );
-        const data = await response.json();
-        messages
-          ? setMessages(data.messages, ...messages)
-          : setMessages(data.messages);
-        setIsLoading(false);
-        scrollIntoView();
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    if (currentConvo) getMessages();
-  }, [currentConvo, page]);
-
-  const handleNewMessage = async (content) => {
-    makeDummyMessage(content);
-    try {
-      const response = await fetch(
-        `/api/convos/${currentConvo._id}/messages/`,
-        {
-          method: "post",
-          body: JSON.stringify({ content }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        createSnack({
-          message: "Message unable to send",
-          severity: "error",
-        });
-        // Should add some message flag component or just remove the message from the messages array.
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const makeDummyMessage = (content) => {
-    const message = {
-      dateCreated: Date.now(),
-      conversation: currentConvo,
-      author: auth.user,
-      content,
-    };
-    messages
-      ? setMessages((currentMessages) => [...currentMessages, message])
-      : setMessages([message]);
-    updateConversation(message);
-    scrollIntoView();
-    return message;
-  };
+  const { allConvos, currentConvo } = useMessenger();
 
   const scrollIntoView = () => {
     messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+  };
+
+  useLayoutEffect(() => {
+    scrollIntoView();
+  });
+
+  const renderMessages = () => {
+    return !allConvos[currentConvo] ? (
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    ) : allConvos[currentConvo]?.messages ? (
+      allConvos[currentConvo].messages.map((m) => (
+        <Message
+          key={m._id || m.dateCreated + m.author._id}
+          message={m}
+          image={allConvos[currentConvo].image}
+        />
+      ))
+    ) : (
+      <Typography variant="h5" className={classes.centered}>
+        Don't be afraid to make the first move!
+      </Typography>
+    );
   };
 
   return (
@@ -152,10 +145,24 @@ export default function MainContainer(props) {
               <Menu />
             </Button>
           </Hidden>
-
-          <Typography variant="h6" className={classes.heading}>
-            {currentConvo && currentConvo.users[0].username}
-          </Typography>
+          <>
+            <Typography variant="h6" className={classes.heading}>
+              {allConvos[currentConvo]?.users[0].username}
+            </Typography>
+            <Badge
+              variant="dot"
+              overlap="circle"
+              classes={{
+                badge: clsx(classes.status, {
+                  [classes.online]: allConvos[currentConvo]?.isOnline,
+                  [classes.offline]: !allConvos[currentConvo]?.isOnline,
+                }),
+              }}
+            ></Badge>
+            <Typography variant="h6" className={classes.statusText}>
+              {allConvos[currentConvo]?.isOnline ? "Online" : "Offline"}
+            </Typography>
+          </>
         </div>
         <Button className={classes.moreButton}>
           <MoreHoriz />
@@ -163,17 +170,9 @@ export default function MainContainer(props) {
       </Paper>
 
       <Grid className={classes.main} ref={messagesRef}>
-        {isLoading ? (
-          <CircularProgress className={classes.centered} />
-        ) : (
-          messages &&
-          messages.map((m) => (
-            <Message key={m._id || m.dateCreated + m.author._id} message={m} />
-          ))
-        )}
+        {renderMessages()}
       </Grid>
-
-      <MessengerForm handleNewMessage={handleNewMessage} />
+      <MessengerForm />
     </>
   );
 }

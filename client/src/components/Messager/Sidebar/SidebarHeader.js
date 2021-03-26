@@ -2,6 +2,8 @@ import React from "react";
 import {
   Typography,
   Grid,
+  Avatar,
+  Badge,
   Button,
   Menu,
   MenuItem,
@@ -28,6 +30,14 @@ const useStyles = makeStyles((theme) => ({
 
   moreButton: {
     color: "#bbb",
+  },
+
+  status: {
+    width: "15px",
+    height: "15px",
+    border: "2px solid #fff",
+    borderRadius: "100%",
+    background: theme.palette.online.main,
   },
 }));
 
@@ -60,11 +70,27 @@ export default function SidebarHeader() {
     >
       <Grid item xs={10}>
         <Grid container alignItems="center">
-          <img src={image3} className={classes.circle} />
-
-          <Typography variant="h6" className={classes.username}>
-            {auth.user.username}
-          </Typography>
+          <Grid item xs={3}>
+            {" "}
+            <Badge
+              variant="dot"
+              overlap="circle"
+              classes={{
+                badge: classes.status,
+              }}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+            >
+              <Avatar src={image3} className={classes.circle} />
+            </Badge>
+          </Grid>
+          <Grid item xs={9}>
+            <Typography variant="h6" className={classes.username}>
+              {auth.user.username}
+            </Typography>
+          </Grid>
         </Grid>
       </Grid>
       <Grid item xs={2}>

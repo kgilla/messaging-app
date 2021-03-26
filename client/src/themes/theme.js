@@ -13,6 +13,8 @@ export const theme = createMuiTheme({
 
   palette: {
     primary: { main: "#3A8DFF" },
+    online: { main: "#52be80" },
+    offline: { main: "#aaa" },
   },
 
   input: {
@@ -34,26 +36,16 @@ export const theme = createMuiTheme({
   },
 
   circleImage: {
-    display: "flex",
-    justifyContent: "flex-start",
     height: "50px",
     width: "50px",
-    marginRight: "16px",
-    borderRadius: "100%",
-    background: "#ccc",
-    overflow: "hidden",
+    // marginRight: "16px",
   },
 
   smallCircleImage: {
-    display: "flex",
-    justifyContent: "flex-start",
     height: "35px",
     width: "35px",
     marginRight: "8px",
     marginTop: "16px",
-    borderRadius: "100%",
-    background: "#ccc",
-    overflow: "hidden",
   },
 
   subHeading: {

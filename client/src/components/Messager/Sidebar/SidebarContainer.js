@@ -9,6 +9,8 @@ import {
 import SearchIcon from "@material-ui/icons/Search";
 
 import { useAuth } from "hooks/useAuth";
+import { useMessenger } from "hooks/useMessenger";
+import { useSnack } from "hooks/useSnack";
 
 import Conversation from "./Conversation";
 import SidebarHeader from "./SidebarHeader";
@@ -57,21 +59,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SidebarContainer(props) {
-  const {
-    allConvos,
-    currentConvo,
-    changeConvo,
-    createConversation,
-    createSnack,
-  } = props;
-
+export default function SidebarContainer({ toggleDrawer }) {
   const [input, setInput] = useState("");
   const [searchResults, setSearchResults] = useState(null);
 
   const classes = useStyles();
   const mainRef = useRef();
   const auth = useAuth();
+  const { allConvos } = useMessenger();
+  const { createSnack } = useSnack();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,9 +100,9 @@ export default function SidebarContainer(props) {
 
   const filterConvos = (input) => {
     return allConvos.filter((c) =>
-      c.users.some((user) =>
-        user.username.toLowerCase().includes(input.toLowerCase())
-      )
+      c.users.some((user) => {
+        return user?.username?.toLowerCase().includes(input.toLowerCase());
+      })
     );
   };
 
@@ -160,13 +156,13 @@ export default function SidebarContainer(props) {
                 Search Results ({searchResults?.length})
               </Typography>
               {searchResults.length ? (
-                searchResults.map((result, i) => (
+                searchResults.map((user, i) => (
                   <SearchResult
-                    key={result._id}
-                    user={result}
+                    key={user._id}
+                    user={user}
                     i={i}
-                    createConversation={createConversation}
                     clearSearchResults={clearSearchResults}
+                    toggleDrawer={toggleDrawer}
                   />
                 ))
               ) : (
@@ -186,8 +182,8 @@ export default function SidebarContainer(props) {
               <Conversation
                 key={convo._id}
                 convo={convo}
-                changeConvo={changeConvo}
-                currentConvo={currentConvo}
+                toggleDrawer={toggleDrawer}
+                clearResults={clearSearchResults}
               />
             ))}
         </Grid>
